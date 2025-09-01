@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import {
   FaKaaba,
   FaUserFriends,
@@ -13,10 +13,17 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [candidacyOpen, setCandidacyOpen] = useState(false);
+  const [electionOpen, setElectionOpen] = useState(false);
 
   useEffect(() => {
     if (location.pathname.startsWith("/admin/candidacy")) {
       setCandidacyOpen(true);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (location.pathname.startsWith("/admin/election")) {
+      setElectionOpen(true);
     }
   }, [location.pathname]);
 
@@ -27,16 +34,16 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
       label: "Dashboard",
       icon: <FaKaaba />,
     },
-    {
-      to: "/admin/users",
-      label: "Users",
-      icon: <FaUserFriends />,
-    },
-    {
-      to: "/admin/settings",
-      label: "Settings",
-      icon: <FaWhmcs />,
-    },
+    // {
+    //   to: "/admin/users",
+    //   label: "Users",
+    //   icon: <FaUserFriends />,
+    // },
+    // {
+    //   to: "/admin/settings",
+    //   label: "Settings",
+    //   icon: <FaWhmcs />,
+    // },
   ];
 
   const candidacyLinks = [
@@ -50,16 +57,7 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
       label: "BSIT",
       icon: <FaPlus />,
     },
-    // {
-    //   to: "/admin/candidacy/bsba",
-    //   label: "BSBA",
-    //   icon: <FaPlus />,
-    // },
-    // {
-    //   to: "/admin/candidacy/bsed",
-    //   label: "BSED",
-    //   icon: <FaPlus />,
-    // },
+
     {
       to: "/admin/candidacy/beed",
       label: "BEED",
@@ -70,9 +68,27 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
       label: "CRIMINOLOGY",
       icon: <FaPlus />,
     },
+  ];
+  const electionLinks = [
     {
-      to: "/admin/candidacy/psychology",
-      label: "PSYCHOLOGY",
+      to: "/admin/election/ssg",
+      label: "SSG",
+      icon: <FaPlus />,
+    },
+    {
+      to: "/admin/election/bsit",
+      label: "BSIT",
+      icon: <FaPlus />,
+    },
+
+    {
+      to: "/admin/election/beed",
+      label: "BEED",
+      icon: <FaPlus />,
+    },
+    {
+      to: "/admin/election/crim",
+      label: "CRIMINOLOGY",
       icon: <FaPlus />,
     },
   ];
@@ -130,6 +146,52 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
           {candidacyOpen && (
             <div className="pl-6 mt-2 space-y-1">
               {candidacyLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`btn btn-ghost w-full justify-start flex items-center gap-2 text-left ${
+                    location.pathname === link.to
+                      ? "bg-gray-800 text-white"
+                      : ""
+                  }`}
+                >
+                  <span className="group relative">
+                    {link.icon}
+                    <span className="absolute left-8 top-1/2 -translate-y-1/2 px-2 py-1 rounded bg-gray-900 text-white text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none md:hidden z-50">
+                      {link.label}
+                    </span>
+                  </span>
+                  <span className="hidden md:inline">{link.label}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+          {/* Election expandable section */}
+          <button
+            type="button"
+            className="btn btn-ghost w-full justify-start flex items-center gap-2"
+            onClick={() => {
+              setElectionOpen((prev) => !prev);
+              if (!electionOpen) {
+                navigate("/admin/election/ssg");
+              }
+            }}
+          >
+            <span className="group relative">
+              {/* Candidacy icon */}
+              <FaWhmcs />
+              <span className="absolute left-8 top-1/2 -translate-y-1/2 px-2 py-1 rounded bg-gray-900 text-white text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none md:hidden z-50">
+                Election
+              </span>
+            </span>
+            <span className="font-semibold flex-1 text-left hidden md:inline">
+              Election
+            </span>
+            {electionOpen ? <FaChevronDown /> : <FaChevronUp />}
+          </button>
+          {electionOpen && (
+            <div className="pl-6 mt-2 space-y-1">
+              {electionLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
@@ -222,6 +284,38 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
             {candidacyOpen && (
               <div className="pl-2 mt-2 space-y-1">
                 {candidacyLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className={`btn btn-ghost w-full justify-start flex items-center gap-2 text-left ${
+                      location.pathname === link.to
+                        ? "bg-gray-800 text-white"
+                        : ""
+                    }`}
+                    title={link.label}
+                  >
+                    {link.icon}
+                  </Link>
+                ))}
+              </div>
+            )}
+            <button
+              type="button"
+              className="btn btn-ghost w-full justify-start flex items-center gap-2"
+              onClick={() => {
+                setElectionOpen((prev) => !prev);
+                if (!electionOpen) {
+                  navigate("/admin/election/ssg");
+                }
+              }}
+              title="Election"
+            >
+              <FaPlus />
+              {electionOpen ? <FaChevronDown /> : <FaChevronUp />}
+            </button>
+            {electionOpen && (
+              <div className="pl-2 mt-2 space-y-1">
+                {electionLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}

@@ -4,11 +4,12 @@ import { use, useState } from "react";
 import LoginForm from "./pages/LoginForm";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
-import { SsgCandidacy } from "./pages/SsgCandidacy";
+import { SsgCandidacy } from "./pages/candidacy/SsgCandidacy";
 import AdminSidebar from "./components/AdminSidebar";
 import { FaBars } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
-import { BsitCandidacy } from "./pages/BsitCandidacy";
+import { BsitCandidacy } from "./pages/candidacy/BsitCandidacy";
+import { SsgElection } from "./pages/election/SsgElection";
 
 function App() {
   const location = useLocation();
@@ -39,26 +40,6 @@ function App() {
             />
           )}
         </div>
-
-        // <button
-        //   className="md:hidden  fixed top-4 left-4 z-50 btn btn-square btn-ghost"
-        //   onClick={handleBurgerClick}
-        // >
-        //   <svg
-        //     xmlns="http://www.w3.org/2000/svg"
-        //     className="h-6 w-6"
-        //     fill="none"
-        //     viewBox="0 0 24 24"
-        //     stroke="currentColor"
-        //   >
-        //     <path
-        //       strokeLinecap="round"
-        //       strokeLinejoin="round"
-        //       strokeWidth={2}
-        //       d="M4 6h16M4 12h16M4 18h16"
-        //     />
-        //   </svg>
-        // </button>
       )}
       {!hideSidebar && (
         <AdminSidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
@@ -71,6 +52,8 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/candidacy/ssg" element={<SsgCandidacy />} />
           <Route path="/admin/candidacy/bsit" element={<BsitCandidacy />} />
+          <Route path="/admin/election/ssg" element={<SsgElection />} />
+
           {/* Add more routes here */}
         </Routes>
       </div>

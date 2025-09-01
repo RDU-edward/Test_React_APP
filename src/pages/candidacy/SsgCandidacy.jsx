@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { FaLayerGroup } from "react-icons/fa";
-import CountDown from "../components/CountDown";
-import OpenFiling from "../components/OpenFiling";
+import CountDown from "../../components/CountDown";
+import OpenFiling from "../../components/OpenFiling";
 
 const initialUsers = [
   {
     id: 1,
-    name: "Edward Catapan",
+    name: "Dio Lupa",
     song: "Remaining Reason",
     img: "https://img.daisyui.com/images/profile/demo/1@94.webp",
     details: "Dio Lupa is a top artist this week. Song: Remaining Reason.",
@@ -32,13 +32,41 @@ const initialUsers = [
     img: "https://img.daisyui.com/images/profile/demo/4@94.webp",
     details: "Alice Blue's Ocean Eyes is a fan favorite.",
   },
+  {
+    id: 5,
+    name: "Bob Green",
+    song: "Mountain Call",
+    img: "https://img.daisyui.com/images/profile/demo/5@94.webp",
+    details: "Bob Green's Mountain Call is climbing the charts.",
+  },
+  {
+    id: 6,
+    name: "Bob Green",
+    song: "Mountain Call",
+    img: "https://img.daisyui.com/images/profile/demo/5@94.webp",
+    details: "Bob Green's Mountain Call is climbing the charts.",
+  },
+  {
+    id: 7,
+    name: "Bob Green",
+    song: "Mountain Call",
+    img: "https://img.daisyui.com/images/profile/demo/5@94.webp",
+    details: "Bob Green's Mountain Call is climbing the charts.",
+  },
+  {
+    id: 8,
+    name: "Bob Green",
+    song: "Mountain Call",
+    img: "https://img.daisyui.com/images/profile/demo/5@94.webp",
+    details: "Bob Green's Mountain Call is climbing the charts.",
+  },
 ];
+const dept = "SSG";
 
-const dept = "BSIT";
-export const BsitCandidacy = () => {
-  const [showElectionForm, setShowElectionForm] = useState(true);
+export const SsgCandidacy = () => {
+  const [showCandidacyForm, setShowCandidacyForm] = useState(true);
   const [candidacyOpened, setCandidacyOpened] = useState(false);
-  //   const [closeDate, setCloseDate] = useState("");
+  const [closeDate, setCloseDate] = useState("");
 
   const [countdown, setCountdown] = useState({
     days: 0,
@@ -46,25 +74,26 @@ export const BsitCandidacy = () => {
     minutes: 0,
     seconds: 0,
   });
+
   const data = JSON.parse(localStorage.getItem("electionData"));
 
   useEffect(() => {
     if (data && data.filingStatus === "open") {
       setCandidacyOpened(true);
-      setShowElectionForm(false);
+      setShowCandidacyForm(false);
     } else {
       setCandidacyOpened(false);
-      setShowElectionForm(true);
+      setShowCandidacyForm(true);
     }
   }, [data]);
 
   // Update countdown every second
   useEffect(() => {
-    if (!candidacyOpened || !data) return;
+    if (!candidacyOpened || !closeDate) return;
 
     const interval = setInterval(() => {
       const now = new Date();
-      const end = new Date(data.closeFileDate);
+      const end = new Date(closeDate);
       const diff = Math.max(0, end - now);
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
@@ -74,7 +103,7 @@ export const BsitCandidacy = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [candidacyOpened, data]);
+  }, [candidacyOpened, closeDate]);
 
   const [users, setUsers] = useState(initialUsers);
   const [selected, setSelected] = useState(null);
@@ -96,23 +125,20 @@ export const BsitCandidacy = () => {
       setCurrentPage(currentPage - 1);
     }
   };
-  console.log(showElectionForm);
 
   return (
     <div className="flex-1 p-8">
-      <div className="">
+      <div>
         {/* Election Form */}
-        {showElectionForm && (
+        {showCandidacyForm && (
           <OpenFiling
             dept={dept}
             setCandidacyOpened={setCandidacyOpened}
-            setShowElectionForm={setShowElectionForm}
+            setShowCandidacyForm={setShowCandidacyForm}
           />
         )}
-
-        {!showElectionForm && (
+        {!showCandidacyForm && (
           <div className="flex flex-col mb-6 w-full">
-            {/* countdown */}
             <CountDown countdown={countdown} dept={dept} />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-2 mt-4">

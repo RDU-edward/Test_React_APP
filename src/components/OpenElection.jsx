@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
+const OpenFiling = ({ dept, setElectionOpened, setShowElectionForm }) => {
   const [formData, setFormData] = useState({
     adminId: "",
     adminPassword: "",
-    closeFileDate: "",
+    closeElectionDate: "",
     department: dept,
-    filingStatus: "open",
+    electionStatus: "open",
   });
   //
 
@@ -19,18 +19,17 @@ const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
-    localStorage.setItem("candidacyData", JSON.stringify(formData));
+    localStorage.setItem("electionData", JSON.stringify(formData));
     setTimeout(() => {
-      setCandidacyOpened(true);
-      setShowCandidacyForm(false);
+      setElectionOpened(true);
+      setShowElectionForm(false);
     }, 3000);
   };
 
   return (
     <div className="max-w-md h-96 mx-auto bg-base-100 p-6 rounded-xl shadow-lg">
       <h2 className="text-2xl font-bold text-center mb-4">
-        Open {dept} Filing
+        Open {dept} Election
       </h2>
       <form className="space-y-4">
         <input
@@ -51,12 +50,12 @@ const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
           onChange={handleChange}
           required
         />
-        <label className="block font-medium">Candidate Filing Close Date</label>
+        <label className="block font-medium">Election Close Date</label>
         <input
           type="datetime-local"
           className="input input-bordered w-full"
-          name="closeFileDate"
-          value={formData.closeFileDate}
+          name="closeElectionDate"
+          value={formData.closeElectionDate}
           onChange={handleChange}
           required
         />
@@ -64,7 +63,7 @@ const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
           className="btn bg-gray-800 text-white w-full"
           onClick={handleSubmit}
         >
-          Open Filing
+          Open Election
         </button>
       </form>
     </div>
