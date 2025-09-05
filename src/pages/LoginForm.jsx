@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Hero from "../components/Hero";
+import testImage from "../assets/test.jpg";
 
 export default function LoginForm() {
   const [id, setId] = useState("");
@@ -12,8 +14,14 @@ export default function LoginForm() {
   };
 
   const handleAdminLogin = () => {
-    // Add admin login logic here
+    // Add admin login logic
+    localStorage.setItem("User", "Admin");
     navigate("/admin");
+  };
+
+  const studentLogin = () => {
+    localStorage.setItem("User", "Student");
+    navigate("/student");
   };
 
   return (
@@ -38,7 +46,11 @@ export default function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <button type="submit" className="btn btn-primary w-full">
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              onClick={studentLogin}
+            >
               Login
             </button>
             <button

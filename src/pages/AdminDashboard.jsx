@@ -91,21 +91,21 @@ export default function AdminDashboard() {
     <div className="">
       {/* Main Content */}
       <main className="flex-1 p-8">
-        <h1 className="text-3xl font-bold mb-6">Welcome, Admin!</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center md:text-left">
+          Welcome, Admin!
+        </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 ">
           <div className="stats shadow bg-base-100">
             <div className="stat">
-              <div className="stat-title text-gray-800 font-medium">
-                Total Students
-              </div>
+              <div className="stat-title font-medium">Total Students</div>
               <div className="stat-value">89,400</div>
               <div className="stat-desc">21% more than last month</div>
             </div>
           </div>
           <div className="stats shadow bg-base-100">
             <div className="stat">
-              <div className="stat-title text-gray-800 font-medium">
+              <div className="stat-title font-medium">
                 Total Registered Voters
               </div>
               <div className="stat-value">89,400</div>
@@ -114,9 +114,7 @@ export default function AdminDashboard() {
           </div>
           <div className="stats shadow bg-base-100">
             <div className="stat">
-              <div className="stat-title text-gray-800 font-medium">
-                Total Candidates
-              </div>
+              <div className="stat-title font-medium">Total Candidates</div>
               <div className="stat-value">89,400</div>
               <div className="stat-desc">21% more than last month</div>
             </div>

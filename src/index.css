@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: light --default, dark --prefersdark, corporate;
+  themes: light --default, dark --prefersdark, retro, cyberpunk;
 }
 /* Tailwind handles this, but if you're writing custom CSS: */
 /* .transition-icon {

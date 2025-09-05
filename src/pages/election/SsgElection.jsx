@@ -97,7 +97,6 @@ const dept = "SSG";
 export const SsgElection = () => {
   const [showElectionForm, setShowElectionForm] = useState(true);
   const [electionOpened, setElectionOpened] = useState(false);
-  const [closeDate, setCloseDate] = useState("");
 
   const [countdown, setCountdown] = useState({
     days: 0,
@@ -107,9 +106,9 @@ export const SsgElection = () => {
   });
 
   const data = JSON.parse(localStorage.getItem("electionData"));
-
+  const closeDate = data?.closeElectionDate;
   useEffect(() => {
-    if (data && data.electionStatus === "open") {
+    if (data && data?.electionStatus === "open") {
       setElectionOpened(true);
       setShowElectionForm(false);
     } else {
@@ -273,10 +272,8 @@ export const SsgElection = () => {
 
             <div className="grid grid-cols-1  lg:grid-cols-4 gap-6 mb-2 mt-4">
               <div className="card w-full bg-base-100 card-xs shadow-sm  hover:scale-95 hover:shadow-md ">
-                <div className="card-body cursor-pointer hover:bg-gray-300 transition px-6">
-                  <h2 className="text-sm font-medium text-gray-900">
-                    No. of Candidates
-                  </h2>
+                <div className="card-body cursor-pointer px-6">
+                  <h2 className="text-sm font-medium">No. of Candidates</h2>
                   <div className="flex items-center justify-between">
                     <h1 className="text-4xl font-extrabold text-red-500">18</h1>
                     <FaUserPlus className="text-2xl" />
@@ -284,10 +281,8 @@ export const SsgElection = () => {
                 </div>
               </div>
               <div className="card w-full bg-base-100 card-xs shadow-sm hover:scale-95 hover:shadow-md">
-                <div className="card-body cursor-pointer hover:bg-gray-300 transition px-6">
-                  <h2 className="text-sm font-medium text-gray-900">
-                    No. of Position
-                  </h2>
+                <div className="card-body cursor-pointer px-6">
+                  <h2 className="text-sm font-medium">No. of Position</h2>
                   <div className="flex items-center justify-between">
                     <h1 className="text-4xl font-extrabold text-purple-500">
                       10
@@ -297,10 +292,8 @@ export const SsgElection = () => {
                 </div>
               </div>
               <div className="card w-full bg-base-100 card-xs shadow-sm hover:scale-95 hover:shadow-md">
-                <div className="card-body cursor-pointer hover:bg-gray-300 transition px-6">
-                  <h2 className="text-sm font-medium text-gray-700">
-                    Total Voters
-                  </h2>
+                <div className="card-body cursor-pointer transition px-6">
+                  <h2 className="text-sm font-medium">Total Voters</h2>
                   <div className="flex items-center justify-between">
                     <h1 className="text-4xl font-extrabold text-green-500">
                       1000
@@ -310,10 +303,8 @@ export const SsgElection = () => {
                 </div>
               </div>
               <div className="card w-full bg-base-100 card-xs shadow-sm hover:scale-95 hover:shadow-md">
-                <div className="card-body cursor-pointer hover:bg-gray-300 transition px-6">
-                  <h2 className="text-sm font-medium text-gray-700">
-                    Voters Voted
-                  </h2>
+                <div className="card-body cursor-pointer px-6">
+                  <h2 className="text-sm font-medium">Voters Voted</h2>
                   <div className="flex items-center justify-between">
                     <h1 className="text-4xl font-extrabold text-black">500</h1>
                     <FaUserCheck className="text-2xl" />
@@ -356,7 +347,7 @@ export const SsgElection = () => {
               <div className="w-full  mt-4 ">
                 <ul className="list bg-base-100 rounded-box shadow-md p-4 h-88 ">
                   <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">
-                    Recently Voted Students
+                    Recently Student Voters
                   </li>
                   {paginatedUsers.map((user) => (
                     <li

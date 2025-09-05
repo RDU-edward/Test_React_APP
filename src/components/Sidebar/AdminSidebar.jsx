@@ -2,12 +2,12 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, use } from "react";
 import {
   FaKaaba,
-  FaUserFriends,
   FaWhmcs,
   FaPlus,
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
+import ThemeSwitcher from "../ThemeSwitcher";
 
 export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
   const navigate = useNavigate();
@@ -18,12 +18,14 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
   useEffect(() => {
     if (location.pathname.startsWith("/admin/candidacy")) {
       setCandidacyOpen(true);
+      setElectionOpen(false);
     }
   }, [location.pathname]);
 
   useEffect(() => {
     if (location.pathname.startsWith("/admin/election")) {
       setElectionOpen(true);
+      setCandidacyOpen(false);
     }
   }, [location.pathname]);
 
@@ -92,6 +94,11 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
       icon: <FaPlus />,
     },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("User");
+    navigate("/login");
+  };
 
   // Desktop Sidebar
   return (
@@ -214,9 +221,9 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
           )}
         </nav>
         <div className="p-4 border-t">
-          <Link
-            to="/login"
+          <button
             className="btn btn-outline w-full hover:bg-gray-800 hover:text-white flex items-center gap-2"
+            onClick={handleLogout}
           >
             <span className="group relative">
               {/* Logout icon */}
@@ -243,17 +250,15 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
               </span>
             </span>
             <span className="hidden md:inline">Logout</span>
-          </Link>
+          </button>
+          <ThemeSwitcher />
         </div>
       </aside>
 
       {/* Mobile Sidebar */}
       {mobileOpen && (
         <aside className="md:hidden fixed inset-0 bg-base-100 shadow-lg z-40 flex flex-col w-24 ">
-          <div className="p-4 text-white md:text-gray-700 text-xs lg:text-xl text-center font-bold border-b border-gray-700">
-            Smart Vote Admin
-          </div>
-          <nav className="flex-1 p-3 space-y-2">
+          <nav className="flex-1 p-3 space-y-2 mt-12">
             {links.map((link) => (
               <Link
                 key={link.to}
@@ -333,10 +338,9 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
             )}
           </nav>
           <div className="p-3 border-t">
-            <Link
-              to="/login"
+            <button
               className="btn btn-outline w-full hover:bg-gray-800 hover:text-white flex items-center gap-2"
-              title="Logout"
+              onClick={handleLogout}
             >
               <svg
                 className="w-5 h-5"
@@ -356,7 +360,8 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
                   d="M3 12v7a2 2 0 002 2h6"
                 />
               </svg>
-            </Link>
+            </button>
+            <ThemeSwitcher />
           </div>
         </aside>
       )}

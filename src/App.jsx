@@ -5,11 +5,13 @@ import LoginForm from "./pages/LoginForm";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
 import { SsgCandidacy } from "./pages/candidacy/SsgCandidacy";
-import AdminSidebar from "./components/AdminSidebar";
+import AdminSidebar from "./components/Sidebar/AdminSidebar";
 import { FaBars } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
 import { BsitCandidacy } from "./pages/candidacy/BsitCandidacy";
 import { SsgElection } from "./pages/election/SsgElection";
+import StudentSidebar from "./components/Sidebar/StudentSidebar";
+import StudentDashboard from "./pages/StudentDashboard";
 
 function App() {
   const location = useLocation();
@@ -23,6 +25,9 @@ function App() {
       setMobileOpen(true);
     }
   };
+
+  const userRole = localStorage.getItem("User");
+
   return (
     <div className="bg-base-200 min-h-screen">
       {/* Hamburger for mobile */}
@@ -41,15 +46,22 @@ function App() {
           )}
         </div>
       )}
-      {!hideSidebar && (
-        <AdminSidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
-      )}
+      {!hideSidebar &&
+        (userRole == "Admin" ? (
+          <AdminSidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+        ) : (
+          <StudentSidebar
+            mobileOpen={mobileOpen}
+            setMobileOpen={setMobileOpen}
+          />
+        ))}
       <div className={hideSidebar ? "" : "md:ml-64"}>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/student" element={<StudentDashboard />} />
           <Route path="/admin/candidacy/ssg" element={<SsgCandidacy />} />
           <Route path="/admin/candidacy/bsit" element={<BsitCandidacy />} />
           <Route path="/admin/election/ssg" element={<SsgElection />} />
