@@ -12,10 +12,22 @@ import { BsitCandidacy } from "./pages/candidacy/BsitCandidacy";
 import { SsgElection } from "./pages/election/SsgElection";
 import StudentSidebar from "./components/Sidebar/StudentSidebar";
 import StudentDashboard from "./pages/StudentDashboard";
+import CandidacyHistory from "./components/CandidacyHistory";
+import Hero from "./components/Hero";
 
 function App() {
   const location = useLocation();
-  const hideSidebar = ["/login", "/register"].includes(location.pathname);
+  // const hideSidebar =
+  //   ["/login", "/register"].includes(location.pathname);
+  // const hideSidebar = location.pathname.startsWith(
+  //   "/login",
+  //   "/register",
+  //   "/student"
+  // );
+
+  const hideSidebar = ["/login", "/register", "/student"].some((prefix) =>
+    location.pathname.startsWith(prefix)
+  );
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleBurgerClick = () => {
@@ -46,7 +58,12 @@ function App() {
           )}
         </div>
       )}
-      {!hideSidebar &&
+      {/* Render sidebar only if not hidden */}
+      {!hideSidebar && (
+        <AdminSidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+      )}
+
+      {/* {!hideSidebar &&
         (userRole == "Admin" ? (
           <AdminSidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
         ) : (
@@ -54,17 +71,22 @@ function App() {
             mobileOpen={mobileOpen}
             setMobileOpen={setMobileOpen}
           />
-        ))}
+        ))} */}
+
       <div className={hideSidebar ? "" : "md:ml-64"}>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<LoginForm />} />
+          <Route path="/login" element={<Hero />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/student" element={<StudentDashboard />} />
           <Route path="/admin/candidacy/ssg" element={<SsgCandidacy />} />
           <Route path="/admin/candidacy/bsit" element={<BsitCandidacy />} />
           <Route path="/admin/election/ssg" element={<SsgElection />} />
+          <Route
+            path="/student/candidacy/history"
+            element={<CandidacyHistory />}
+          />
 
           {/* Add more routes here */}
         </Routes>

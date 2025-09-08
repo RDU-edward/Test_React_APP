@@ -12,9 +12,9 @@ import StudentDashboard from "./pages/StudentDashboard.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <StudentDashboard />
+      {/* <StudentDashboard /> */}
       {/* <Hero /> */}
-      {/* <App /> */}
+      <App />
       {/* <TestLocation /> */}
     </BrowserRouter>
   </StrictMode>

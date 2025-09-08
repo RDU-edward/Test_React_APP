@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaEye } from "react-icons/fa";
 import { FaMessage, FaRegCircleCheck, FaRegCircleXmark } from "react-icons/fa6";
+import Navbar from "./Navbar";
 
 const initialUsers = [
   {
@@ -53,77 +54,82 @@ export default function CandidacyHistory() {
   //   const paginatedUsers = users.slice(startIdx, startIdx + usersPerPage);
 
   return (
-    <div className="p-8">
-      <div className="text-2xl font-bold mb-4">Candidacy History</div>
-      <div className="overflow-x-auto">
-        <table className="table bg-base-100 rounded-box shadow-md w-full">
-          <thead>
-            <tr>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Position</th>
-              <th className="px-4 py-2">Election</th>
-              <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr
-                key={user.id}
-                className="hover:bg-base-200 cursor-pointer transition"
-              >
-                <td className="flex items-center gap-2 px-4 py-2">
-                  <img
-                    className="size-10 rounded-box"
-                    src={user.img}
-                    alt={user.name}
-                  />
-                  <span>{user.name}</span>
-                </td>
-                <td className="px-4 py-2">
-                  <span className="text-xs uppercase font-semibold">
-                    {user.position}
-                  </span>
-                </td>
-                <td className="px-4 py-2">
-                  <span className="text-xs uppercase font-semibold">
-                    {user.election}
-                  </span>
-                </td>
-                <td className="px-4 py-2">
-                  {(() => {
-                    const statusClass =
-                      {
-                        Pending: "text-blue-500",
-                        Accepted: "text-green-600",
-                        Rejected: "text-red-500",
-                      }[user.status] || "";
+    <div className="min-h-screen bg-base-200 w-full overflow-auto">
+      <Navbar />
 
-                    return (
-                      <span
-                        className={`text-xs uppercase  ${statusClass} font-extrabold tracking-wide`}
-                      >
-                        {user.status}
-                      </span>
-                    );
-                  })()}
-                </td>
-                <td className="px-4 py-2 flex gap-2">
-                  <button
-                    className="btn btn-sm btn-outline w-20"
-                    onClick={() => setSelected(user)}
-                  >
-                    <span>
-                      <FaEye />
-                    </span>
-                    View
-                  </button>
-                </td>
+      <div className="mt-14 px-6 md:px-20 py-8 flex flex-col justify-center">
+        <div className=" flex flex-col justify-center overflow-x-auto ">
+          <div className="text-2xl font-bold mb-4 mt-4">Candidacy History</div>
+          <table className="table bg-base-100 rounded-box shadow-md">
+            <thead>
+              <tr>
+                <th className="px-4 py-2">Name</th>
+                <th className="px-4 py-2">Position</th>
+                <th className="px-4 py-2">Election</th>
+                <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr
+                  key={user.id}
+                  className="hover:bg-base-200 cursor-pointer transition"
+                >
+                  <td className="flex items-center gap-2 px-4 py-2">
+                    <img
+                      className="size-10 rounded-box"
+                      src={user.img}
+                      alt={user.name}
+                    />
+                    <span>{user.name}</span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className="text-xs uppercase font-semibold">
+                      {user.position}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className="text-xs uppercase font-semibold">
+                      {user.election}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    {(() => {
+                      const statusClass =
+                        {
+                          Pending: "text-blue-500",
+                          Accepted: "text-green-600",
+                          Rejected: "text-red-500",
+                        }[user.status] || "";
+
+                      return (
+                        <span
+                          className={`text-xs uppercase  ${statusClass} font-extrabold tracking-wide`}
+                        >
+                          {user.status}
+                        </span>
+                      );
+                    })()}
+                  </td>
+                  <td className="px-4 py-2 flex gap-2">
+                    <button
+                      className="btn btn-sm btn-outline w-20"
+                      onClick={() => setSelected(user)}
+                    >
+                      <span>
+                        <FaEye />
+                      </span>
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+
       {selected && (
         <div className="w-96">
           {/* Modal Backdrop - more transparent */}

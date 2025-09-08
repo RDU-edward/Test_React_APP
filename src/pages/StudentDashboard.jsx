@@ -83,7 +83,6 @@ export default function StudentDashboard() {
       case "secretary":
         // setRole("secretary");
         setShowVotersForm(true);
-        console.log("dlsfgjdlkfgjdkflg");
 
         break;
       default:
@@ -115,8 +114,9 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-base-200 w-full overflow-auto">
       <Navbar />
+
       {showVotersForm ? (
-        <div className="flex justify-center w-full py-8">
+        <div className="flex justify-center w-full py-8 mt-14">
           <form
             action=""
             className="border-2 w-5/6 md:w-3/4  rounded-md border-base-300 "
@@ -286,7 +286,7 @@ export default function StudentDashboard() {
         </div>
       ) : (
         <>
-          <div className="flex flex-col items-center justify-center py-8">
+          <div className="flex flex-col items-center justify-center py-8 mt-12">
             <div className="text-xl font-bold tracking-wider mb-2">
               {roleDisplayName[role]}
             </div>

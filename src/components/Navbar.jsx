@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const themes = [
     { name: "light", icon: "🌞" },
     { name: "dark", icon: "🌙" },
@@ -19,7 +21,7 @@ export default function Navbar() {
   }, [theme]);
 
   return (
-    <div className="navbar bg-base-100 shadow-sm">
+    <div className="navbar bg-base-100 shadow-sm fixed w-full z-10">
       <div className="flex-1">
         <a className="btn btn-ghost text-xl">daisyUI</a>
       </div>
@@ -90,13 +92,21 @@ export default function Navbar() {
                 ))}
               </select>
             </li>
-            <li>
+            <li
+              onClick={() => {
+                navigate("/student/candidacy/history");
+              }}
+            >
               <a>Candidacy History</a>
             </li>
             <li>
               <a>Voting History</a>
             </li>
-            <li>
+            <li
+              onClick={() => {
+                navigate("/login");
+              }}
+            >
               <a>Logout</a>
             </li>
           </ul>
