@@ -11,9 +11,11 @@ import { FaXmark } from "react-icons/fa6";
 import { BsitCandidacy } from "./pages/candidacy/BsitCandidacy";
 import { SsgElection } from "./pages/election/SsgElection";
 import StudentSidebar from "./components/Sidebar/StudentSidebar";
-import StudentDashboard from "./pages/StudentDashboard";
+import StudentDashboard from "./pages/SmartvoteElection";
 import CandidacyHistory from "./components/CandidacyHistory";
 import Hero from "./components/Hero";
+import CandidacyForm from "./components/CandidacyForm";
+import SmartvoteElection from "./pages/SmartvoteElection";
 
 function App() {
   const location = useLocation();
@@ -41,7 +43,7 @@ function App() {
   const userRole = localStorage.getItem("User");
 
   return (
-    <div className="bg-base-200 min-h-screen">
+    <div className="relative bg-base-200 min-h-screen">
       {/* Hamburger for mobile */}
       {!hideSidebar && (
         <div className="md:hidden fixed top-4 left-4 z-50">
@@ -76,16 +78,21 @@ function App() {
       <div className={hideSidebar ? "" : "md:ml-64"}>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<Hero />} />
+          <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/student" element={<StudentDashboard />} />
+          <Route path="/student" element={<Hero />} />
           <Route path="/admin/candidacy/ssg" element={<SsgCandidacy />} />
           <Route path="/admin/candidacy/bsit" element={<BsitCandidacy />} />
           <Route path="/admin/election/ssg" element={<SsgElection />} />
           <Route
             path="/student/candidacy/history"
             element={<CandidacyHistory />}
+          />
+          <Route path="/student/file-candidacy" element={<CandidacyForm />} />
+          <Route
+            path="/student/election/voting"
+            element={<SmartvoteElection />}
           />
 
           {/* Add more routes here */}

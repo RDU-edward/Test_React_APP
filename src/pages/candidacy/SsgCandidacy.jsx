@@ -184,6 +184,12 @@ export const SsgCandidacy = () => {
                   <h1 className="text-4xl font-extrabold text-blue-500">80</h1>
                   <FaLayerGroup className="text-2xl" />
                 </div>
+                <div>Departments</div>
+                <div>
+                  <div className="font-bold tracking-wider">
+                    CCS - 12, CTE - 15, CBA - 20, PSYCH - 10, CJE- 8
+                  </div>
+                </div>
               </div>
             </div>
             <div className="card w-full bg-base-100 card-xs shadow-sm ">
@@ -192,6 +198,12 @@ export const SsgCandidacy = () => {
                 <div className="flex items-center justify-between">
                   <h1 className="text-4xl font-extrabold text-red-500">34</h1>
                   <FaCube className="text-2xl" />
+                </div>
+                <div>Departments</div>
+                <div>
+                  <div className="font-bold tracking-wider">
+                    CCS - 12, CTE - 15, CBA - 20, PSYCH - 10, CJE- 8
+                  </div>
                 </div>
               </div>
             </div>
@@ -202,6 +214,12 @@ export const SsgCandidacy = () => {
                 <div className="flex items-center justify-between">
                   <h1 className="text-4xl font-extrabold text-green-500">20</h1>
                   <FaFileSignature className="text-2xl" />
+                </div>
+                <div>Departments</div>
+                <div>
+                  <div className="font-bold tracking-wider">
+                    CCS - 12, CTE - 15, CBA - 20, PSYCH - 10, CJE- 8
+                  </div>
                 </div>
               </div>
             </div>

@@ -36,16 +36,11 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
       label: "Dashboard",
       icon: <FaKaaba />,
     },
-    // {
-    //   to: "/admin/users",
-    //   label: "Users",
-    //   icon: <FaUserFriends />,
-    // },
-    // {
-    //   to: "/admin/settings",
-    //   label: "Settings",
-    //   icon: <FaWhmcs />,
-    // },
+    {
+      to: "/admin/user-management",
+      label: "User Management",
+      icon: <FaWhmcs />,
+    },
   ];
 
   const candidacyLinks = [

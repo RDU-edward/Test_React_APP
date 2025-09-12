@@ -7,7 +7,7 @@ import AdminSidebar from "./components/Sidebar/AdminSidebar.jsx";
 import TestLocation from "./TestLocation.jsx";
 import Hero from "./components/Hero.jsx";
 import LoginForm from "./pages/LoginForm.jsx";
-import StudentDashboard from "./pages/StudentDashboard.jsx";
+import StudentDashboard from "./pages/SmartvoteElection.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

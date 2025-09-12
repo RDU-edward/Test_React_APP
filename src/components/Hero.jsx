@@ -1,14 +1,10 @@
 import { useState } from "react";
 import Navbar from "./Navbar";
+import { useNavigate } from "react-router-dom";
 export default function Hero() {
   const [showToast, setShowToast] = useState(false);
 
-  const handleClick = () => {
-    setShowToast(true);
-
-    // Hide toast after 3 seconds
-    setTimeout(() => setShowToast(false), 3000);
-  };
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-base-200 overflow-auto">
       {/* Navbar */}
@@ -38,7 +34,10 @@ export default function Hero() {
               et a id nisi.
             </p>
             <div className="flex gap-4 justify-center">
-              <button className="btn btn-secondary" onClick={handleClick}>
+              <button
+                className="btn btn-secondary"
+                onClick={() => navigate("/student/file-candidacy")}
+              >
                 File SSG Candidacy
               </button>
               <button className="btn btn-success">File BSIT Candidacy</button>
@@ -46,7 +45,7 @@ export default function Hero() {
           </div>
         </div>
       </div>
-      <div className="flex justify-center items-center min-h-[calc(100vh-6rem)]">
+      {/* <div className="flex justify-center items-center min-h-[calc(100vh-6rem)]">
         <div className="hero-content text-center">
           <div className="max-w-md">
             <h1 className="text-5xl font-bold">Hello there</h1>
@@ -57,11 +56,16 @@ export default function Hero() {
             </p>
             <div className="flex gap-4 justify-center">
               <button className="btn btn-primary">Get Started</button>
-              <button className="btn btn-warning">Vote Now</button>
+              <button
+                onClick={() => navigate("/student/election/voting")}
+                className="btn btn-warning"
+              >
+                Vote Now
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

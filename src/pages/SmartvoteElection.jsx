@@ -1,7 +1,9 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
+import { FaChevronCircleLeft, FaChevronLeft } from "react-icons/fa";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
-export default function StudentDashboard() {
+export default function SmartvoteElection() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeCard, setActiveCard] = useState(null);
   const [role, setRole] = useState("president"); // Added role state
@@ -116,173 +118,181 @@ export default function StudentDashboard() {
       <Navbar />
 
       {showVotersForm ? (
-        <div className="flex justify-center w-full py-8 mt-14">
-          <form
-            action=""
-            className="border-2 w-5/6 md:w-3/4  rounded-md border-base-300 "
-          >
-            <div className="text-center text-2xl py-4 border-b-2 border-base-300 mb-2">
-              Voters Form
+        <div className="mt-20">
+          <div className="w-5/6 md:w-3/4 flex flex-col justify-center mx-auto mb-8">
+            <div
+              className="p-2 flex items-center gap-2 cursor-pointer hover:scale-105 w-fit"
+              onClick={() => setShowVotersForm(false)}
+            >
+              <FaArrowLeftLong /> Back
             </div>
-            <div className="w-full p-6 ">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 border p-4 rounded-md">
-                <div>
-                  <label htmlFor="" className="text-xs">
-                    Student ID
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="ID"
-                    className="input input-bordered w-full"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="" className="text-xs">
-                    Date
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Date"
-                    className="input input-bordered w-full"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="" className="text-xs">
-                    Position
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="ID"
-                    className="input input-bordered w-full"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="" className="text-xs">
-                    Department/Course
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="ID"
-                    className="input input-bordered w-full"
-                    required
-                  />
-                </div>
+            <form
+              action=""
+              className="border-2 w-full rounded-md border-base-300 "
+            >
+              <div className="text-center text-2xl py-4 border-b-2 border-base-300 mb-2">
+                Voters Form
               </div>
+              <div className="w-full p-6 ">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 border p-4 rounded-md">
+                  <div>
+                    <label htmlFor="" className="text-xs">
+                      Student ID
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="ID"
+                      className="input input-bordered w-full"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="" className="text-xs">
+                      Date
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Date"
+                      className="input input-bordered w-full"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="" className="text-xs">
+                      Position
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="ID"
+                      className="input input-bordered w-full"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="" className="text-xs">
+                      Department/Course
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="ID"
+                      className="input input-bordered w-full"
+                      required
+                    />
+                  </div>
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2">
-                <div>
-                  <div className="mt-4 text-sm mb-1">President</div>
-                  <div className="border p-4 rounded-md  ">
-                    <div className="text-xs md:text-sm flex flex-row gap-6">
-                      <div className="flex gap-4">
-                        <label htmlFor="">John Doe</label>
-                        <input
-                          type="radio"
-                          name="radio-1"
-                          className="radio radio-info"
-                          defaultChecked
-                        />
+                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2">
+                  <div>
+                    <div className="mt-4 text-sm mb-1">President</div>
+                    <div className="border p-4 rounded-md  ">
+                      <div className="text-xs md:text-sm flex flex-row gap-6">
+                        <div className="flex gap-4">
+                          <label htmlFor="">John Doe</label>
+                          <input
+                            type="radio"
+                            name="radio-1"
+                            className="radio radio-info"
+                            defaultChecked
+                          />
+                        </div>
+                        <div className="flex gap-4">
+                          <label htmlFor="">Will Sy</label>
+                          <input
+                            type="radio"
+                            name="radio-1"
+                            className="radio radio-info"
+                            defaultChecked
+                          />
+                        </div>
                       </div>
-                      <div className="flex gap-4">
-                        <label htmlFor="">Will Sy</label>
-                        <input
-                          type="radio"
-                          name="radio-1"
-                          className="radio radio-info"
-                          defaultChecked
-                        />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="mt-4 text-sm mb-1">Vice President</div>
+                    <div className="border p-4 rounded-md  ">
+                      <div className="text-xs md:text-sm flex flex-row gap-6">
+                        <div className="flex gap-4">
+                          <label htmlFor="">John Doe</label>
+                          <input
+                            type="radio"
+                            name="radio-2"
+                            className="radio radio-info"
+                            defaultChecked
+                          />
+                        </div>
+                        <div className="flex gap-4">
+                          <label htmlFor="">Will Sy</label>
+                          <input
+                            type="radio"
+                            name="radio-2"
+                            className="radio radio-info"
+                            defaultChecked
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div>
-                  <div className="mt-4 text-sm mb-1">Vice President</div>
-                  <div className="border p-4 rounded-md  ">
-                    <div className="text-xs md:text-sm flex flex-row gap-6">
-                      <div className="flex gap-4">
-                        <label htmlFor="">John Doe</label>
-                        <input
-                          type="radio"
-                          name="radio-2"
-                          className="radio radio-info"
-                          defaultChecked
-                        />
-                      </div>
-                      <div className="flex gap-4">
-                        <label htmlFor="">Will Sy</label>
-                        <input
-                          type="radio"
-                          name="radio-2"
-                          className="radio radio-info"
-                          defaultChecked
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2">
-                <div>
-                  <div className="mt-4 text-sm mb-1">Secretary</div>
-                  <div className="border p-4 rounded-md  ">
-                    <div className="text-xs md:text-sm flex flex-row gap-6">
-                      <div className="flex gap-4">
-                        <label htmlFor="">Johny Sins</label>
-                        <input
-                          type="radio"
-                          name="radio-1"
-                          className="radio radio-info"
-                          defaultChecked
-                        />
-                      </div>
-                      <div className="flex gap-4">
-                        <label htmlFor="">Dolor Tea</label>
-                        <input
-                          type="radio"
-                          name="radio-1"
-                          className="radio radio-info"
-                          defaultChecked
-                        />
+                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2">
+                  <div>
+                    <div className="mt-4 text-sm mb-1">Secretary</div>
+                    <div className="border p-4 rounded-md  ">
+                      <div className="text-xs md:text-sm flex flex-row gap-6">
+                        <div className="flex gap-4">
+                          <label htmlFor="">Johny Sins</label>
+                          <input
+                            type="radio"
+                            name="radio-1"
+                            className="radio radio-info"
+                            defaultChecked
+                          />
+                        </div>
+                        <div className="flex gap-4">
+                          <label htmlFor="">Dolor Tea</label>
+                          <input
+                            type="radio"
+                            name="radio-1"
+                            className="radio radio-info"
+                            defaultChecked
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div>
-                  <div className="mt-4 text-sm mb-1">Treasurer</div>
-                  <div className="border p-4 rounded-md  ">
-                    <div className="text-xs md:text-sm flex flex-row gap-6">
-                      <div className="flex gap-4">
-                        <label htmlFor="">Samantha Rain sdfsdfsdf</label>
-                        <input
-                          type="radio"
-                          name="radio-2"
-                          className="radio radio-info"
-                          defaultChecked
-                        />
-                      </div>
-                      <div className="flex gap-4">
-                        <label htmlFor="">Lorem Ipsum dolor TEstsff</label>
-                        <input
-                          type="radio"
-                          name="radio-2"
-                          className="radio radio-info"
-                          defaultChecked
-                        />
+                  <div>
+                    <div className="mt-4 text-sm mb-1">Treasurer</div>
+                    <div className="border p-4 rounded-md  ">
+                      <div className="text-xs md:text-sm flex flex-row gap-6">
+                        <div className="flex gap-4">
+                          <label htmlFor="">Samantha Rain sdfsdfsdf</label>
+                          <input
+                            type="radio"
+                            name="radio-2"
+                            className="radio radio-info"
+                            defaultChecked
+                          />
+                        </div>
+                        <div className="flex gap-4">
+                          <label htmlFor="">Lorem Ipsum dolor TEstsff</label>
+                          <input
+                            type="radio"
+                            name="radio-2"
+                            className="radio radio-info"
+                            defaultChecked
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="flex gap-2 justify-center p-6">
-              <button className="btn btn-error">Submit Vote</button>
-              <button className="btn ">Clear Form</button>
-            </div>
-          </form>
+              <div className="flex gap-2 justify-center p-6">
+                <button className="btn btn-error">Submit Vote</button>
+                <button className="btn ">Clear Form</button>
+              </div>
+            </form>
+          </div>
         </div>
       ) : (
         <>
