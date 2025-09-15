@@ -6,6 +6,9 @@ import {
   FaPlus,
   FaChevronDown,
   FaChevronUp,
+  FaSignOutAlt,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 import ThemeSwitcher from "../ThemeSwitcher";
 
@@ -14,6 +17,10 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
   const location = useLocation();
   const [candidacyOpen, setCandidacyOpen] = useState(false);
   const [electionOpen, setElectionOpen] = useState(false);
+
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     if (location.pathname.startsWith("/admin/candidacy")) {
@@ -102,6 +109,7 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
         <div className="p-6 text-xl text-center font-bold border-b">
           Smart Vote Admin
         </div>
+
         <nav className="flex-1 p-4 space-y-2">
           {links.map((link) => (
             <Link
@@ -216,12 +224,36 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
           )}
         </nav>
         <div className="p-4 border-t">
-          <button
+          <div className="flex items-center gap-3 mb-4">
+            <div className="avatar avatar-online avatar-placeholder">
+              <div className="bg-neutral text-neutral-content w-8 rounded-full dropdown">
+                <span className="text-xs">UI</span>
+              </div>
+            </div>
+            <div className="text-sm">
+              Edward Catapan <br />{" "}
+              <span
+                className="text-xs tracking-wide text-blue-500 cursor-pointer hover:underline"
+                onClick={() =>
+                  document.getElementById("change_pass_modal_3").showModal()
+                }
+              >
+                Change Password
+              </span>
+            </div>
+
+            <div className=" ml-6 tooltip tooltip-bottom" data-tip="Logout">
+              <FaSignOutAlt
+                className="text-2xl cursor-pointer"
+                onClick={() => navigate("/login")}
+              />
+            </div>
+          </div>
+          {/* <button
             className="btn btn-outline w-full hover:bg-gray-800 hover:text-white flex items-center gap-2"
             onClick={handleLogout}
           >
             <span className="group relative">
-              {/* Logout icon */}
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -245,14 +277,15 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
               </span>
             </span>
             <span className="hidden md:inline">Logout</span>
-          </button>
+          </button> */}
+
           <ThemeSwitcher />
         </div>
       </aside>
 
       {/* Mobile Sidebar */}
       {mobileOpen && (
-        <aside className="md:hidden fixed inset-0 bg-base-100 shadow-lg z-40 flex flex-col w-24 ">
+        <aside className="md:hidden fixed inset-0 bg-base-100 shadow-lg z-40 flex flex-col w-50 ">
           <nav className="flex-1 p-3 space-y-2 mt-12">
             {links.map((link) => (
               <Link
@@ -265,6 +298,7 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
                 title={link.label}
               >
                 {link.icon}
+                <span className="text-xs">{link.label}</span>
               </Link>
             ))}
             <button
@@ -279,6 +313,7 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
               title="Candidacy"
             >
               <FaPlus />
+              <span className="text-xs">Candidacy</span>
               {candidacyOpen ? <FaChevronDown /> : <FaChevronUp />}
             </button>
             {candidacyOpen && (
@@ -295,6 +330,7 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
                     title={link.label}
                   >
                     {link.icon}
+                    <span className="text-xs">{link.label}</span>
                   </Link>
                 ))}
               </div>
@@ -311,6 +347,8 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
               title="Election"
             >
               <FaPlus />
+              <span className="text-xs">Election</span>
+
               {electionOpen ? <FaChevronDown /> : <FaChevronUp />}
             </button>
             {electionOpen && (
@@ -327,39 +365,110 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
                     title={link.label}
                   >
                     {link.icon}
+                    <span className="text-xs">{link.label}</span>
                   </Link>
                 ))}
               </div>
             )}
           </nav>
           <div className="p-3 border-t">
-            <button
-              className="btn btn-outline w-full hover:bg-gray-800 hover:text-white flex items-center gap-2"
-              onClick={handleLogout}
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
+            <div className="flex flex-col items-center gap-3 mb-4">
+              <div className="avatar avatar-online avatar-placeholder">
+                <div className="bg-neutral text-neutral-content w-8 rounded-full dropdown">
+                  <span className="text-xs">UI</span>
+                </div>
+              </div>
+              <div className="text-sm">
+                Edward Catapan <br />{" "}
+                <span
+                  className="text-xs tracking-wide text-blue-500 cursor-pointer hover:underline"
+                  onClick={() =>
+                    document.getElementById("change_pass_modal_3").showModal()
+                  }
+                >
+                  Change Password
+                </span>
+              </div>
+
+              <div
+                className="tooltip tooltip-bottom border p-1 w-full flex justify-center rounded"
+                data-tip="Logout"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7"
+                <FaSignOutAlt
+                  className="text-2xl cursor-pointer"
+                  onClick={() => navigate("/login")}
                 />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 12v7a2 2 0 002 2h6"
-                />
-              </svg>
-            </button>
+              </div>
+            </div>
             <ThemeSwitcher />
           </div>
         </aside>
       )}
+
+      <dialog id="change_pass_modal_3" className="modal">
+        <div className="modal-box lg:w-96 ">
+          <form method="dialog">
+            {/* Close button */}
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+
+            <h3 className="font-bold text-lg tracking-wider">
+              Change Password
+            </h3>
+
+            {/* Current Password */}
+            <div className="flex flex-col form-control w-full mt-4 relative">
+              <label className="text-sm tracking-wider">Current Password</label>
+              <input
+                className="border p-2 pr-10 rounded"
+                type={showCurrent ? "text" : "password"}
+                placeholder="Current Password"
+              />
+              <div
+                className="absolute right-3 top-9 cursor-pointer text-gray-500"
+                onClick={() => setShowCurrent(!showCurrent)}
+              >
+                {showCurrent ? <FaEye /> : <FaEyeSlash />}
+              </div>
+            </div>
+
+            {/* New Password */}
+            <div className="flex flex-col form-control w-full mt-4 relative">
+              <label className="text-sm tracking-wider">New Password</label>
+              <input
+                className="border p-2 pr-10 rounded"
+                type={showNew ? "text" : "password"}
+                placeholder="New Password"
+              />
+              <div
+                className="absolute right-3 top-9 cursor-pointer text-gray-500"
+                onClick={() => setShowNew(!showNew)}
+              >
+                {showCurrent ? <FaEye /> : <FaEyeSlash />}
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div className="flex flex-col form-control w-full mt-4 relative">
+              <label className="text-sm tracking-wider">Confirm Password</label>
+              <input
+                className="border p-2 pr-10 rounded"
+                type={showConfirm ? "text" : "password"}
+                placeholder="Confirm Password"
+              />
+              <div
+                className="absolute right-3 top-9 cursor-pointer text-gray-500"
+                onClick={() => setShowConfirm(!showConfirm)}
+              >
+                {showCurrent ? <FaEye /> : <FaEyeSlash />}
+              </div>
+            </div>
+
+            <button className="btn btn-secondary w-full mt-4">Submit</button>
+          </form>
+        </div>
+      </dialog>
     </>
   );
 }

@@ -88,7 +88,7 @@ const pieData = {
 
 export default function AdminDashboard() {
   return (
-    <div className="">
+    <div>
       {/* Main Content */}
       <main className="flex-1 p-8">
         <h1 className="text-3xl font-bold mb-6 text-center md:text-left">

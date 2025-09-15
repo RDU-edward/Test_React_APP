@@ -316,13 +316,13 @@ export default function SmartvoteElection() {
                     <p>Information Technology</p>
                     <div className="card-actions justify-end">
                       <button
-                        className="btn btn-primary w-full"
+                        className="btn btn-outline w-full"
                         onClick={() => {
                           setActiveCard(card);
                           setIsOpen(true);
                         }}
                       >
-                        View
+                        Candidate Details
                       </button>
                     </div>
                   </div>

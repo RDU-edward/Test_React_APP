@@ -16,6 +16,8 @@ import CandidacyHistory from "./components/CandidacyHistory";
 import Hero from "./components/Hero";
 import CandidacyForm from "./components/CandidacyForm";
 import SmartvoteElection from "./pages/SmartvoteElection";
+import UserManagement from "./pages/UserManagement";
+import ElectionReceipt from "./components/ElectionReceipt";
 
 function App() {
   const location = useLocation();
@@ -85,6 +87,7 @@ function App() {
           <Route path="/admin/candidacy/ssg" element={<SsgCandidacy />} />
           <Route path="/admin/candidacy/bsit" element={<BsitCandidacy />} />
           <Route path="/admin/election/ssg" element={<SsgElection />} />
+          <Route path="/admin/user-management" element={<UserManagement />} />
           <Route
             path="/student/candidacy/history"
             element={<CandidacyHistory />}
@@ -93,6 +96,10 @@ function App() {
           <Route
             path="/student/election/voting"
             element={<SmartvoteElection />}
+          />
+          <Route
+            path="/student/election/history"
+            element={<ElectionReceipt />}
           />
 
           {/* Add more routes here */}

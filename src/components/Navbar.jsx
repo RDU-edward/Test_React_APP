@@ -25,7 +25,8 @@ export default function Navbar() {
       <div className="flex-1">
         <a className="btn btn-ghost text-xl">SmartVote</a>
       </div>
-      <div className="flex gap-4 mr-4">
+      <div className="flex gap-4 items-center mr-4">
+        <div className="hidden md:inline text-sm">Hello, Edward</div>
         <div className="dropdown dropdown-end">
           <button className="btn btn-ghost btn-circle">
             <div className="indicator">
@@ -99,7 +100,11 @@ export default function Navbar() {
             >
               <a>Candidacy History</a>
             </li>
-            <li>
+            <li
+              onClick={() => {
+                navigate("/student/election/history");
+              }}
+            >
               <a>Voting History</a>
             </li>
             <li
