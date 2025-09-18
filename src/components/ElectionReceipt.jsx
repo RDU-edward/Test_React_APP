@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "./Navbar";
 import { QRCodeSVG } from "qrcode.react";
 import { FaEye } from "react-icons/fa";
+import Footer from "./Footer";
 
 const initialUsers = [
   {
@@ -26,19 +27,20 @@ const initialUsers = [
 
 export default function ElectionReceipt() {
   const qrValue = `
-    -- QR Inventory System -- 
+    -- SmartVote System -- 
 
-    Ref ID:"ASDFasdfasdf"
-    Item Name:"adsfjaskldfalksdfj"
-    Model Number: "asdlfjalsdfjlkasdf"
-    Serial Number: "asdfhaskjdfhaskdfh"
+    Voters ID:"ASDFasdfasdf"
+    Name:"adsfjaskldfalksdfj"
+    Course: "asdlfjalsdfjlkasdf"
+    Election Type: "asdfhaskjdfhaskdfh"
+    Election Date: "asdfhaskjdfhaskdfh"
   
   `;
 
   return (
-    <div className="min-h-screen bg-base-200 w-full overflow-auto">
+    <div className="flex flex-col min-h-screen bg-base-200 overflow-auto">
       <Navbar />
-      <div className="mt-14 px-4 sm:px-6 md:px-20 py-8 flex flex-col justify-center text-xl sm:text-2xl font-bold">
+      <div className="mt-14 px-4 sm:px-6 md:px-20 py-8 flex-1 flex-col justify-center text-xl sm:text-2xl font-bold">
         <div>Vote History</div>
         <div className=" flex flex-col justify-center overflow-x-auto ">
           <table className="table bg-base-100 rounded-box shadow-md mt-6">
@@ -52,10 +54,12 @@ export default function ElectionReceipt() {
               </tr>
             </thead>
             <tbody>
-              {initialUsers.map((user) => (
+              {initialUsers.map((user, index) => (
                 <tr
-                  key={user.id}
-                  className="hover:bg-base-200 cursor-pointer transition"
+                  key={index}
+                  className={`hover:bg-base-200 cursor-pointer transition ${
+                    index % 2 ? "bg-base-300" : ""
+                  }`}
                 >
                   <td className="flex items-center gap-2 px-4 py-2">
                     <img
@@ -183,6 +187,11 @@ export default function ElectionReceipt() {
           </div>
         </div>
       </dialog>
+
+      {/* Footer stays at the bottom */}
+      <div className="mb-4">
+        <Footer />
+      </div>
     </div>
   );
 }

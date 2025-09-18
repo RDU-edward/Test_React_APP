@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import CountDown from "./CountDown";
 import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 export default function CandidacyForm() {
   const [candidacyOpened, setCandidacyOpened] = useState(false);
   // const [closeDate, setCloseDate] = useState("");
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+  });
 
   const [countdown, setCountdown] = useState({
     days: 0,
@@ -13,21 +19,68 @@ export default function CandidacyForm() {
     seconds: 0,
   });
 
-  const data = JSON.parse(localStorage.getItem("candidacyData"));
-  const closeDate = data?.closeFileDate;
-  useEffect(() => {
-    if (data && data.filingStatus === "open") {
-      setCandidacyOpened(true);
-      // setShowCandidacyForm(false);
-    } else {
-      setCandidacyOpened(false);
-      // setShowCandidacyForm(true);
+  const [tabActive, setTabActive] = useState("tab1");
+
+  const handleTabClick = (tab) => {
+    const { firstname, lastname, email } = formData;
+    const hasChanges = firstname || lastname || email;
+
+    if (hasChanges) {
+      const confirmSwitch = window.confirm(
+        "Changes will not be saved. Do you want to continue?"
+      );
+      if (!confirmSwitch) return;
     }
-  }, [data]);
+
+    // Clear the form
+    setFormData({
+      firstname: "",
+      lastname: "",
+      email: "",
+    });
+
+    // Switch the tab
+    setTabActive(tab);
+  };
+
+  const dept = tabActive == "tab1" ? "SSG" : "BSIT";
+  const data = [
+    {
+      adminId: "test1",
+      adminPassword: "testpass",
+      closeFileDate: "2025-09-18T16:59",
+      department: "SSG",
+      filingStatus: "open",
+    },
+    {
+      adminId: "test1",
+      adminPassword: "testpass",
+      closeFileDate: "2025-09-18T16:35",
+      department: "BSIT",
+      filingStatus: "open",
+    },
+  ];
+
+  const getCloseFileDate =
+    tabActive == "tab1" ? data[0]?.closeFileDate : data[1]?.closeFileDate;
+  const getFilingStatus =
+    tabActive == "tab1" ? data[0]?.filingStatus : data[1]?.filingStatus;
+
+  const closeDate = getCloseFileDate;
+
+  // useEffect(() => {
+  //   if (getFilingStatus === "open") {
+  //     setCandidacyOpened(true);
+  //     // setShowCandidacyForm(false);
+  //   } else {
+  //     setCandidacyOpened(false);
+  //     // setShowCandidacyForm(true);
+  //   }
+  // }, [data]);
 
   // Update countdown every second
   useEffect(() => {
-    if (!candidacyOpened || !closeDate) return;
+    // if (!candidacyOpened || !closeDate) return;
 
     const interval = setInterval(() => {
       const now = new Date();
@@ -41,97 +94,140 @@ export default function CandidacyForm() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [candidacyOpened, closeDate]);
-  const dept = "SSG";
+  }, [closeDate]);
+  // }, [candidacyOpened, closeDate]);
+
   return (
-    <div className="min-h-screen bg-base-200 w-full overflow-auto">
+    <div className="flex flex-col min-h-screen bg-base-200 overflow-auto">
       <Navbar />
       <div className="mt-20 flex justify-center">
-        <CountDown countdown={countdown} dept={dept}  />
+        {getFilingStatus === "open" ? (
+          <CountDown countdown={countdown} dept={dept} />
+        ) : (
+          <div className="text-xl mt-4 font-bold tracking-wider">
+            NOT AVAILABLE
+          </div>
+        )}
       </div>
-      <div className="px-6 md:px-20 py-8 flex flex-col justify-center">
-        <form action="" className="border-2  rounded-md border-base-300 ">
-          <div className="text-center text-2xl py-4 border-b-2 border-base-300 mb-2">
-            Candidacy Form
-          </div>
-          <div className="w-full p-6 ">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 border p-4 rounded-md">
-              <div>
-                <label htmlFor="" className="text-xs">
-                  Student ID
-                </label>
-                <input
-                  type="text"
-                  placeholder="ID"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="" className="text-xs">
-                  Date
-                </label>
-                <input
-                  type="text"
-                  placeholder="Date"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="" className="text-xs">
-                  Position
-                </label>
-                <input
-                  type="text"
-                  placeholder="Position"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="" className="text-xs">
-                  Department/Course
-                </label>
-                <input
-                  type="text"
-                  placeholder="ID"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </div>
-            </div>
 
-            <div className="mt-4">
-              <div className="text-sm">Tell us about yourself</div>
-              <textarea
-                name=""
-                id=""
-                className="border w-full rounded-md text-sm p-4"
-                placeholder="Enter a brief description"
-              ></textarea>
+      {/* name of each tab group should be unique */}
+
+      <div className="px-6 md:px-20 py-8 flex-1 flex-col justify-center">
+        {/* name of each tab group should be unique */}
+        <div className="">
+          <button
+            className={`btn border-0 rounded-none border-b-0 border-red-400 tracking-wider ${
+              tabActive === "tab1" ? "btn-active border-1" : ""
+            }`}
+            onClick={() => handleTabClick("tab1")}
+          >
+            SSG Candidacy
+          </button>
+          <button
+            className={`btn border-0 rounded-none border-b-0 border-red-400 tracking-wider  ${
+              tabActive === "tab2" ? "btn-active border-1" : ""
+            }`}
+            onClick={() => handleTabClick("tab2")}
+          >
+            BSIT Candidacy
+          </button>
+        </div>
+
+        {getFilingStatus != "open" ? (
+          <div className="h-96 border border-gray-500 flex justify-center items-center ">
+            <h1 className="text-base md:text-xl font-bold tracking-wider">
+              Filing of Candidacy is not available.
+            </h1>
+          </div>
+        ) : (
+          <form action="" className="border border-gray-500 ">
+            <div className="text-center text-2xl py-4 border-b-2 border-base-300 mb-2">
+              {`${tabActive == "tab1" ? "SSG" : "BSIT"} Candidacy Form`}
             </div>
-            <div className="mt-4">
-              <div className="text-sm">Purpose of filing</div>
-              <textarea
-                name=""
-                id=""
-                className="border w-full rounded-md text-sm p-4"
-                placeholder="Enter a brief description"
-              ></textarea>
-            </div>
-            <div>
-              <div className="text-sm">Attachments</div>
-              <div className="h-24 flex justify-center items-center border-2 border-gray-400 border-dashed rounded-md">
-                Attachments
+            <div className="w-full p-6 ">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 border p-4 rounded-md">
+                <div>
+                  <label htmlFor="" className="text-xs">
+                    Student ID
+                  </label>
+                  <input
+                    type="text"
+                    name="firstname"
+                    placeholder="ID"
+                    className="input input-bordered w-full"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="" className="text-xs">
+                    Date
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Date"
+                    className="input input-bordered w-full"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="" className="text-xs">
+                    Position
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Position"
+                    className="input input-bordered w-full"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="" className="text-xs">
+                    Department/Course
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="ID"
+                    className="input input-bordered w-full"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <div className="text-sm">Tell us about yourself</div>
+                <textarea
+                  name=""
+                  id=""
+                  className="border w-full rounded-md text-sm p-4"
+                  placeholder="Enter a brief description"
+                ></textarea>
+              </div>
+              <div className="mt-4">
+                <div className="text-sm">Purpose of filing</div>
+                <textarea
+                  name=""
+                  id=""
+                  className="border w-full rounded-md text-sm p-4"
+                  placeholder="Enter a brief description"
+                ></textarea>
+              </div>
+              <div>
+                <div className="text-sm">Attachments</div>
+                <div className="h-24 flex justify-center items-center border-2 border-gray-400 border-dashed rounded-md">
+                  Attachments
+                </div>
               </div>
             </div>
-          </div>
-          <div className="flex gap-2 justify-center p-6">
-            <button className="btn btn-error">Submit Candidacy</button>
-            <button className="btn ">Clear Form</button>
-          </div>
-        </form>
+            <div className="flex gap-2 justify-center p-6">
+              <button className="btn btn-error">Submit Candidacy</button>
+              <button className="btn ">Clear Form</button>
+            </div>
+          </form>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <Footer />
       </div>
     </div>
   );

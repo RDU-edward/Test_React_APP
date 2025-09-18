@@ -20,6 +20,7 @@ const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(formData);
+
     localStorage.setItem("candidacyData", JSON.stringify(formData));
     setTimeout(() => {
       setCandidacyOpened(true);
@@ -28,7 +29,7 @@ const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
   };
 
   return (
-    <div className="max-w-md h-96 mx-auto bg-base-100 p-6 rounded-xl shadow-lg">
+    <div className="mt-10 max-w-md h-96 mx-auto bg-base-100 p-6 rounded-xl shadow-lg">
       <h2 className="text-2xl font-bold text-center mb-4">
         Open {dept} Filing
       </h2>

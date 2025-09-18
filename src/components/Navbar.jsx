@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -23,7 +24,12 @@ export default function Navbar() {
   return (
     <div className="navbar bg-base-100 shadow-sm fixed w-full z-10">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">SmartVote</a>
+        <a
+          className="btn btn-ghost text-xl"
+          onClick={() => navigate("/student/homepage")}
+        >
+          SmartVote
+        </a>
       </div>
       <div className="flex gap-4 items-center mr-4">
         <div className="hidden md:inline text-sm">Hello, Edward</div>
@@ -53,11 +59,7 @@ export default function Navbar() {
             className="card card-compact dropdown-content bg-base-100 z-1 mt-3 w-52 shadow"
           >
             <div className="card-body">
-              <span className="text-lg font-bold">8 Items</span>
-              <span className="text-info">Subtotal: $999</span>
-              <div className="card-actions">
-                <button className="btn btn-primary btn-block">View cart</button>
-              </div>
+              <span className="text-sm">Notification here</span>
             </div>
           </div>
         </div>
@@ -79,7 +81,7 @@ export default function Navbar() {
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
-            <li className="flex flex-row justify-between">
+            {/* <li className="flex flex-row justify-between">
               <div className="text-xs">Theme</div>
               <select
                 className=""
@@ -92,8 +94,9 @@ export default function Navbar() {
                   </option>
                 ))}
               </select>
-            </li>
+            </li> */}
             <li
+              className="mb-2"
               onClick={() => {
                 navigate("/student/candidacy/history");
               }}
@@ -101,6 +104,7 @@ export default function Navbar() {
               <a>Candidacy History</a>
             </li>
             <li
+              className="mb-2"
               onClick={() => {
                 navigate("/student/election/history");
               }}
@@ -108,12 +112,16 @@ export default function Navbar() {
               <a>Voting History</a>
             </li>
             <li
+              className="mb-2"
               onClick={() => {
                 navigate("/login");
               }}
             >
               <a>Logout</a>
             </li>
+            <div className="mt-2 text-sm ">
+              <ThemeSwitcher />
+            </div>
           </ul>
         </div>
       </div>

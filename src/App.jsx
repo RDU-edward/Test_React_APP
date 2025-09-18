@@ -51,12 +51,12 @@ function App() {
         <div className="md:hidden fixed top-4 left-4 z-50">
           {mobileOpen ? (
             <FaXmark
-              className="transition-all duration-300 opacity-100 scale-100 btn btn-square btn-ghost"
+              className="transition-all h-8 duration-300 opacity-100 scale-100 btn btn-square btn-ghost"
               onClick={handleBurgerClick}
             />
           ) : (
             <FaBars
-              className="transition-all duration-300 opacity-100 scale-100 btn btn-square btn-ghost"
+              className="transition-all h-8 duration-300 opacity-100 scale-100 btn btn-square btn-ghost"
               onClick={handleBurgerClick}
             />
           )}
@@ -83,7 +83,7 @@ function App() {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/student" element={<Hero />} />
+          <Route path="/student/homepage" element={<Hero />} />
           <Route path="/admin/candidacy/ssg" element={<SsgCandidacy />} />
           <Route path="/admin/candidacy/bsit" element={<BsitCandidacy />} />
           <Route path="/admin/election/ssg" element={<SsgElection />} />

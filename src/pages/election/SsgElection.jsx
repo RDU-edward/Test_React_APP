@@ -21,6 +21,7 @@ import {
   Filler, // <-- Add this
 } from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
+import Footer from "../../components/Footer";
 
 ChartJS.register(
   CategoryScale,
@@ -256,221 +257,233 @@ export const SsgElection = () => {
     ],
   };
   return (
-    <div className="flex-1 p-8">
-      <div>
-        {/* Election Form */}
-        {showElectionForm && (
-          <OpenElection
-            dept={dept}
-            setElectionOpened={setElectionOpened}
-            setShowElectionForm={setShowElectionForm}
-          />
-        )}
-        {!showElectionForm && (
-          <div className="flex flex-col mb-6 w-full">
-            <ElectionCountdown countdown={countdown} dept={dept} />
+    <div className="flex flex-col min-h-screen bg-base-200 overflow-auto">
+      <div className="flex-1 p-8">
+        <div>
+          {/* Election Form */}
+          {showElectionForm && (
+            <OpenElection
+              dept={dept}
+              setElectionOpened={setElectionOpened}
+              setShowElectionForm={setShowElectionForm}
+            />
+          )}
+          {!showElectionForm && (
+            <div className="flex flex-col mb-6 w-full">
+              <ElectionCountdown countdown={countdown} dept={dept} />
 
-            <div className="grid grid-cols-1  lg:grid-cols-4 gap-6 mb-2 mt-4">
-              <div className="card w-full bg-base-100 card-xs shadow-sm  hover:scale-95 hover:shadow-md ">
-                <div className="card-body cursor-pointer px-6">
-                  <h2 className="text-sm font-medium">No. of Candidates</h2>
-                  <div className="flex items-center justify-between">
-                    <h1 className="text-4xl font-extrabold text-red-500">18</h1>
-                    <FaUserPlus className="text-2xl" />
-                  </div>
-                </div>
-              </div>
-              <div className="card w-full bg-base-100 card-xs shadow-sm hover:scale-95 hover:shadow-md">
-                <div className="card-body cursor-pointer px-6">
-                  <h2 className="text-sm font-medium">No. of Position</h2>
-                  <div className="flex items-center justify-between">
-                    <h1 className="text-4xl font-extrabold text-purple-500">
-                      10
-                    </h1>
-                    <FaLayerGroup className="text-2xl" />
-                  </div>
-                </div>
-              </div>
-              <div className="card w-full bg-base-100 card-xs shadow-sm hover:scale-95 hover:shadow-md">
-                <div className="card-body cursor-pointer transition px-6">
-                  <h2 className="text-sm font-medium">Total Voters</h2>
-                  <div className="flex items-center justify-between">
-                    <h1 className="text-4xl font-extrabold text-green-500">
-                      1000
-                    </h1>
-                    <FaMoneyCheck className="text-2xl" />
-                  </div>
-                </div>
-              </div>
-              <div className="card w-full bg-base-100 card-xs shadow-sm hover:scale-95 hover:shadow-md">
-                <div className="card-body cursor-pointer px-6">
-                  <h2 className="text-sm font-medium">Voters Voted</h2>
-                  <div className="flex items-center justify-between">
-                    <h1 className="text-4xl font-extrabold text-black">500</h1>
-                    <FaUserCheck className="text-2xl" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* User List and Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="w-full mt-4">
-                <div className="bg-base-100 rounded-md h-88 shadow p-4 flex flex-col justify-center">
-                  <h2 className="font-bold mb-2 text-center">Line Chart</h2>
-                  <Line data={lineData} />
-                </div>
-              </div>
-              <div className="w-full mt-4">
-                <div className="bg-base-100 rounded-md h-88 shadow p-4 flex flex-col justify-center">
-                  <h2 className="font-bold mb-2 text-center">Bar Chart</h2>
-                  <Bar data={barData} />
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="w-full mt-4 flex justify-center">
-                <div
-                  className="bg-base-100 rounded-md w-full h-88 shadow p-4 flex flex-col justify-center"
-                  style={{ height: 350 }} // Set fixed height for the chart container
-                >
-                  <h2 className="font-bold mb-2 text-center">
-                    Voters Every Hour (Wave Chart)
-                  </h2>
-                  <Line
-                    data={waveData}
-                    options={{ maintainAspectRatio: false }}
-                    height={250} // Chart height
-                  />
-                </div>
-              </div>
-              <div className="w-full  mt-4 ">
-                <ul className="list bg-base-100 rounded-box shadow-md p-4 h-88 ">
-                  <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">
-                    Recently Student Voters
-                  </li>
-                  {paginatedUsers.map((user) => (
-                    <li
-                      key={user.id}
-                      className={`list-row cursor-pointer hover:bg-base-200 transition flex items-center gap-2 px-4 py-2`}
-                      onClick={() => setSelected(user)}
-                    >
-                      <img
-                        className="size-10 rounded-box"
-                        src={user.img}
-                        alt={user.name}
-                      />
-                      <div className="flex-1">
-                        <div>{user.name}</div>
-                        <div className="text-xs uppercase font-semibold opacity-60">
-                          {user.song}
-                        </div>
-                      </div>
-                      <button className="btn btn-square btn-ghost" title="Play">
-                        <svg
-                          className="size-[1.2em]"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                        >
-                          <g
-                            strokeLinejoin="round"
-                            strokeLinecap="round"
-                            strokeWidth="2"
-                            fill="none"
-                            stroke="currentColor"
-                          >
-                            <path d="M6 3L20 12 6 21 6 3z"></path>
-                          </g>
-                        </svg>
-                      </button>
-                      <button
-                        className="btn btn-square btn-ghost text-error"
-                        title="Delete"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(user.id);
-                        }}
-                      >
-                        <svg
-                          className="size-[1.2em]"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                        >
-                          <g
-                            strokeLinejoin="round"
-                            strokeLinecap="round"
-                            strokeWidth="2"
-                            fill="none"
-                            stroke="currentColor"
-                          >
-                            <path d="M6 6L18 18M6 18L18 6"></path>
-                          </g>
-                        </svg>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-                {/* Pagination Controls */}
-                <div className="flex justify-center items-center gap-2 mt-4">
-                  <button
-                    className="btn btn-sm"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                  >
-                    Prev
-                  </button>
-                  <span className="px-2">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    className="btn btn-sm"
-                    disabled={currentPage === totalPages || totalPages === 0}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                  >
-                    Next
-                  </button>
-                </div>
-                {selected && (
-                  <div>
-                    {/* Modal Backdrop - more transparent */}
-                    <div
-                      className="fixed inset-0 bg-black opacity-70  z-40"
-                      onClick={() => setSelected(null)}
-                    ></div>
-                    {/* Modal Content */}
-                    <div className="fixed inset-0 flex items-center justify-center z-50">
-                      <div className="bg-base-100 rounded-box shadow-lg p-6 w-full max-w-md relative">
-                        <button
-                          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-                          onClick={() => setSelected(null)}
-                        >
-                          ✕
-                        </button>
-                        <div className="flex items-center gap-4 mb-2">
-                          <img
-                            className="size-12 rounded-box"
-                            src={selected.img}
-                            alt={selected.name}
-                          />
-                          <div>
-                            <div className="font-bold text-lg">
-                              {selected.name}
-                            </div>
-                            <div className="text-xs uppercase font-semibold opacity-60">
-                              {selected.song}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-sm">{selected.details}</div>
-                      </div>
+              <div className="grid grid-cols-1  lg:grid-cols-4 gap-6 mb-2 mt-4">
+                <div className="card w-full bg-base-100 card-xs shadow-sm  hover:scale-95 hover:shadow-md ">
+                  <div className="card-body cursor-pointer px-6">
+                    <h2 className="text-sm font-medium">No. of Candidates</h2>
+                    <div className="flex items-center justify-between">
+                      <h1 className="text-4xl font-extrabold text-red-500">
+                        18
+                      </h1>
+                      <FaUserPlus className="text-2xl" />
                     </div>
                   </div>
-                )}
+                </div>
+                <div className="card w-full bg-base-100 card-xs shadow-sm hover:scale-95 hover:shadow-md">
+                  <div className="card-body cursor-pointer px-6">
+                    <h2 className="text-sm font-medium">No. of Position</h2>
+                    <div className="flex items-center justify-between">
+                      <h1 className="text-4xl font-extrabold text-purple-500">
+                        10
+                      </h1>
+                      <FaLayerGroup className="text-2xl" />
+                    </div>
+                  </div>
+                </div>
+                <div className="card w-full bg-base-100 card-xs shadow-sm hover:scale-95 hover:shadow-md">
+                  <div className="card-body cursor-pointer transition px-6">
+                    <h2 className="text-sm font-medium">Total Voters</h2>
+                    <div className="flex items-center justify-between">
+                      <h1 className="text-4xl font-extrabold text-green-500">
+                        1000
+                      </h1>
+                      <FaMoneyCheck className="text-2xl" />
+                    </div>
+                  </div>
+                </div>
+                <div className="card w-full bg-base-100 card-xs shadow-sm hover:scale-95 hover:shadow-md">
+                  <div className="card-body cursor-pointer px-6">
+                    <h2 className="text-sm font-medium">Voters Voted</h2>
+                    <div className="flex items-center justify-between">
+                      <h1 className="text-4xl font-extrabold text-black">
+                        500
+                      </h1>
+                      <FaUserCheck className="text-2xl" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* User List and Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="w-full mt-4">
+                  <div className="bg-base-100 rounded-md h-88 shadow p-4 flex flex-col justify-center">
+                    <h2 className="font-bold mb-2 text-center">Line Chart</h2>
+                    <Line data={lineData} />
+                  </div>
+                </div>
+                <div className="w-full mt-4">
+                  <div className="bg-base-100 rounded-md h-88 shadow p-4 flex flex-col justify-center">
+                    <h2 className="font-bold mb-2 text-center">Bar Chart</h2>
+                    <Bar data={barData} />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="w-full mt-4 flex justify-center">
+                  <div
+                    className="bg-base-100 rounded-md w-full h-88 shadow p-4 flex flex-col justify-center"
+                    style={{ height: 350 }} // Set fixed height for the chart container
+                  >
+                    <h2 className="font-bold mb-2 text-center">
+                      Voters Every Hour (Wave Chart)
+                    </h2>
+                    <Line
+                      data={waveData}
+                      options={{ maintainAspectRatio: false }}
+                      height={250} // Chart height
+                    />
+                  </div>
+                </div>
+                <div className="w-full  mt-4 ">
+                  <ul className="list bg-base-100 rounded-box shadow-md p-4 h-88 ">
+                    <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">
+                      Recently Student Voters
+                    </li>
+                    {paginatedUsers.map((user) => (
+                      <li
+                        key={user.id}
+                        className={`list-row cursor-pointer hover:bg-base-200 transition flex items-center gap-2 px-4 py-2`}
+                        onClick={() => setSelected(user)}
+                      >
+                        <img
+                          className="size-10 rounded-box"
+                          src={user.img}
+                          alt={user.name}
+                        />
+                        <div className="flex-1">
+                          <div>{user.name}</div>
+                          <div className="text-xs uppercase font-semibold opacity-60">
+                            {user.song}
+                          </div>
+                        </div>
+                        <button
+                          className="btn btn-square btn-ghost"
+                          title="Play"
+                        >
+                          <svg
+                            className="size-[1.2em]"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                          >
+                            <g
+                              strokeLinejoin="round"
+                              strokeLinecap="round"
+                              strokeWidth="2"
+                              fill="none"
+                              stroke="currentColor"
+                            >
+                              <path d="M6 3L20 12 6 21 6 3z"></path>
+                            </g>
+                          </svg>
+                        </button>
+                        <button
+                          className="btn btn-square btn-ghost text-error"
+                          title="Delete"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(user.id);
+                          }}
+                        >
+                          <svg
+                            className="size-[1.2em]"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                          >
+                            <g
+                              strokeLinejoin="round"
+                              strokeLinecap="round"
+                              strokeWidth="2"
+                              fill="none"
+                              stroke="currentColor"
+                            >
+                              <path d="M6 6L18 18M6 18L18 6"></path>
+                            </g>
+                          </svg>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  {/* Pagination Controls */}
+                  <div className="flex justify-center items-center gap-2 mt-4">
+                    <button
+                      className="btn btn-sm"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                    >
+                      Prev
+                    </button>
+                    <span className="px-2">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      className="btn btn-sm"
+                      disabled={currentPage === totalPages || totalPages === 0}
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                    >
+                      Next
+                    </button>
+                  </div>
+                  {selected && (
+                    <div>
+                      {/* Modal Backdrop - more transparent */}
+                      <div
+                        className="fixed inset-0 bg-black opacity-70  z-40"
+                        onClick={() => setSelected(null)}
+                      ></div>
+                      {/* Modal Content */}
+                      <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="bg-base-100 rounded-box shadow-lg p-6 w-full max-w-md relative">
+                          <button
+                            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                            onClick={() => setSelected(null)}
+                          >
+                            ✕
+                          </button>
+                          <div className="flex items-center gap-4 mb-2">
+                            <img
+                              className="size-12 rounded-box"
+                              src={selected.img}
+                              alt={selected.name}
+                            />
+                            <div>
+                              <div className="font-bold text-lg">
+                                {selected.name}
+                              </div>
+                              <div className="text-xs uppercase font-semibold opacity-60">
+                                {selected.song}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-sm">{selected.details}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        {/* Countdown */}
+          )}
+          {/* Countdown */}
+        </div>
+      </div>
+      <div className="mb-4">
+        <Footer />
       </div>
     </div>
   );

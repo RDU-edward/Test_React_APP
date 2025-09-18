@@ -10,6 +10,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line, Bar, Pie } from "react-chartjs-2";
+import Footer from "../components/Footer";
 
 ChartJS.register(
   CategoryScale,
@@ -88,7 +89,7 @@ const pieData = {
 
 export default function AdminDashboard() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen bg-base-200 overflow-auto">
       {/* Main Content */}
       <main className="flex-1 p-8">
         <h1 className="text-3xl font-bold mb-6 text-center md:text-left">
@@ -134,6 +135,9 @@ export default function AdminDashboard() {
           </div> */}
         </div>
       </main>
+      <div className="mb-4">
+        <Footer />
+      </div>
     </div>
   );
 }

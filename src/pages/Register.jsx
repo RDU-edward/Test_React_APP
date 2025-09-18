@@ -74,10 +74,10 @@ export default function Register() {
           <div className="relative z-20 mt-20 text-4xl font-bold tracking-wider text-white">
             "Empowering Every Student Voice — Vote Anytime, Anywhere."
           </div>
-          <div className="relative z-20 mt-10 text-justify text-md text-2xl font-bold italic ">
+          <div className="relative z-20 mt-10 text-justify text-md text-2xl font-bold italic text-white ">
             Welcome to Smart Vote
           </div>
-          <div className="text-base mt-4 text-justify">
+          <div className="text-base mt-4 text-justify text-white">
             The innovative online voting system designed to streamline and
             secure the election process for our school community. With Smart
             Vote, students can easily register as voters,

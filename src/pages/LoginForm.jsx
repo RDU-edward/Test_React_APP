@@ -21,7 +21,7 @@ export default function LoginForm() {
 
   const studentLogin = () => {
     localStorage.setItem("User", "Student");
-    navigate("/student");
+    navigate("/student/homepage");
   };
 
   return (
@@ -31,7 +31,9 @@ export default function LoginForm() {
         <div className="w-full md:w-1/2 flex items-center justify-center p-4 ">
           <div className="card w-96 bg-base-100 shadow-xl z-10">
             <div className="card-body">
-              {/* <h2 className="card-title justify-center">Login</h2> */}
+              <h2 className="card-title justify-center text-2xl tracking-widest">
+                Smart Vote
+              </h2>
               <form onSubmit={handleLogin} className="space-y-4 mt-6">
                 <input
                   type="text"
@@ -54,7 +56,7 @@ export default function LoginForm() {
                   className="btn btn-primary w-full"
                   onClick={studentLogin}
                 >
-                  Login
+                  Login as Student
                 </button>
                 <button
                   type="button"

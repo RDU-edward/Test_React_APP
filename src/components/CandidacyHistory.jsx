@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FaEye } from "react-icons/fa";
 import { FaMessage, FaRegCircleCheck, FaRegCircleXmark } from "react-icons/fa6";
 import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 const initialUsers = [
   {
@@ -24,6 +25,24 @@ const initialUsers = [
   },
   {
     id: 3,
+    name: "Jane Doe",
+    status: "Rejected",
+    position: "President",
+    img: "https://img.daisyui.com/images/profile/demo/2@94.webp",
+    details: "Jane Doe's hit single Sky High is trending.",
+    election: "SSG ELECTION",
+  },
+  {
+    id: 4,
+    name: "Jane Doe",
+    status: "Rejected",
+    position: "President",
+    img: "https://img.daisyui.com/images/profile/demo/2@94.webp",
+    details: "Jane Doe's hit single Sky High is trending.",
+    election: "SSG ELECTION",
+  },
+  {
+    id: 5,
     name: "Jane Doe",
     status: "Rejected",
     position: "President",
@@ -54,13 +73,13 @@ export default function CandidacyHistory() {
   //   const paginatedUsers = users.slice(startIdx, startIdx + usersPerPage);
 
   return (
-    <div className="min-h-screen bg-base-200 w-full overflow-auto">
+    <div className="flex flex-col min-h-screen bg-base-200 overflow-auto">
       <Navbar />
 
-      <div className="mt-14 px-6 md:px-20 py-8 flex flex-col justify-center">
+      <div className="mt-14 px-6 md:px-20 py-8 flex-1 flex-col justify-center">
         <div className=" flex flex-col justify-center overflow-x-auto ">
           <div className="text-2xl font-bold mb-4 mt-4">Candidacy History</div>
-          <table className="table bg-base-100 rounded-box shadow-md">
+          <table className="table bg-base-100 rounded-box shadow-md rounded-md ">
             <thead>
               <tr>
                 <th className="px-4 py-2">Name</th>
@@ -71,10 +90,12 @@ export default function CandidacyHistory() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {users.map((user, index) => (
                 <tr
-                  key={user.id}
-                  className="hover:bg-base-200 cursor-pointer transition"
+                  key={index}
+                  className={`hover:bg-base-200 cursor-pointer transition ${
+                    index % 2 ? "bg-base-300" : ""
+                  }`}
                 >
                   <td className="flex items-center gap-2 px-4 py-2">
                     <img
@@ -203,26 +224,10 @@ export default function CandidacyHistory() {
           </dialog>
         </div>
       )}
-      {/* Pagination Controls */}
-      {/* <div className="flex justify-center items-center gap-2 mt-4">
-        <button
-          className="btn btn-sm"
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-        >
-          Prev
-        </button>
-        <span className="px-2">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          className="btn btn-sm"
-          disabled={currentPage === totalPages || totalPages === 0}
-          onClick={() => setCurrentPage(currentPage + 1)}
-        >
-          Next
-        </button>
-      </div> */}
+
+      <div className="mb-4">
+        <Footer />
+      </div>
     </div>
   );
 }
