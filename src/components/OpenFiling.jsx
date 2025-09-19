@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Loader from "./Loader";
 
 const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
   const [formData, setFormData] = useState({
@@ -27,9 +28,19 @@ const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
       setShowCandidacyForm(false);
     }, 3000);
   };
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <div className="mt-10 max-w-md h-96 mx-auto bg-base-100 p-6 rounded-xl shadow-lg">
+    <div className="mt-30 max-w-md h-96 mx-auto bg-base-100 p-6 rounded-xl shadow-lg">
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black opacity-75">
+          {/* Prevent interaction with content behind */}
+          <div className="pointer-events-none">
+            <Loader />
+          </div>
+        </div>
+      )}
+
       <h2 className="text-2xl font-bold text-center mb-4">
         Open {dept} Filing
       </h2>
