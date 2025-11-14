@@ -1,14 +1,105 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import testImage from "../assets/unsplash.jpg";
+import axios from "axios";
 export default function Register() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
-  const handleRegister = (e) => {
+  const [formData, setFormData] = useState({
+    student_id: "",
+    firstname: "",
+    lastname: "",
+    department: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const [emptyFields, setEmptyFields] = useState({
+    student_id: false,
+    firstname: false,
+    lastname: false,
+    department: false,
+    email: false,
+    password: false,
+  });
+
+  const [responseMessage, setResponseMessage] = useState({
+    message: "",
+    type: "",
+  }); // {message, type}
+
+  const handleRegister = async (e) => {
     e.preventDefault();
+
+    const requiredFields = [
+      "student_id",
+      "firstname",
+      "lastname",
+      "department",
+      "email",
+      "password",
+    ];
+
+    let newEmptyFields = { ...emptyFields };
+    // Check if any required field is empty and mark it in the state
+    requiredFields.forEach((field) => {
+      newEmptyFields[field] = !formData[field];
+    });
+
+    setEmptyFields(newEmptyFields);
+
+    // If any field is empty, prevent submission
+    if (requiredFields.some((field) => !formData[field])) {
+      console.log("Please fill in all required fields.");
+      return;
+    }
+
     // Add registration logic here
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3004/smart-vote/voters",
+        formData
+      );
+      console.log(response.data);
+      if (response.data.success === true) {
+        setResponseMessage({
+          message: response.data.message || "Registration successful!",
+          type: "success", // or any other type for styling
+        });
+
+        setFormData({
+          student_id: "",
+          firstname: "",
+          lastname: "",
+          department: "",
+          email: "",
+          password: "",
+        });
+      } else {
+        setResponseMessage({
+          message: response.data.message || "Registration failed.",
+          type: "error",
+        });
+      }
+
+      // Set a timeout to remove the responseMessage after 5 seconds
+      setTimeout(() => {
+        setResponseMessage({ message: "", type: "" }); // Clear message after 5 seconds
+      }, 5000); // 5000 milliseconds = 5 seconds
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -16,33 +107,113 @@ export default function Register() {
       <div className="flex min-h-screen ">
         <div className="w-full md:w-1/2 flex items-center justify-center p-4 ">
           <div className="card w-96 bg-base-100 shadow-xl z-10">
+            {/* Conditionally render the response message */}
+            {responseMessage.message && (
+              <div className="flex justify-center mt-4 px-4">
+                <div
+                  className={`alert w-86 ${
+                    responseMessage.type === "success"
+                      ? "alert-success"
+                      : "alert-error"
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 shrink-0 stroke-current"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>{responseMessage.message}</span>
+                </div>
+              </div>
+            )}
             <div className="card-body">
               {/* <h2 className="card-title justify-center">Register</h2> */}
-              <form onSubmit={handleRegister} className="space-y-4 mt-6">
+              <form onSubmit={handleRegister} className="space-y-4 ">
+                <div className="text-center text-xl font-bold tracking-wider">
+                  Voters Registration
+                </div>
                 <input
                   type="text"
                   placeholder="ID"
-                  className="input input-bordered w-full"
-                  value={id}
-                  onChange={(e) => setId(e.target.value)}
-                  required
+                  className={`input input-bordered w-full ${
+                    emptyFields.student_id ? "input-error" : ""
+                  }`}
+                  name="student_id"
+                  value={formData.student_id || ""}
+                  onChange={handleChange}
+                  // required
+                />
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  className={`input input-bordered w-full ${
+                    emptyFields.firstname ? "input-error" : ""
+                  }`}
+                  name="firstname"
+                  value={formData.firstname || ""}
+                  onChange={handleChange}
+                  // required
+                />
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  className={`input input-bordered w-full ${
+                    emptyFields.lastname ? "input-error" : ""
+                  }`}
+                  name="lastname"
+                  value={formData.lastname || ""}
+                  onChange={handleChange}
+                  // required
+                />
+                <input
+                  type="text"
+                  placeholder="Department"
+                  className={`input input-bordered w-full ${
+                    emptyFields.email ? "input-error" : ""
+                  }`}
+                  name="department"
+                  value={formData.department || ""}
+                  onChange={handleChange}
+                  // required
+                />
+                <input
+                  type="text"
+                  placeholder="Email"
+                  className={`input input-bordered w-full ${
+                    emptyFields.email ? "input-error" : ""
+                  }`}
+                  name="email"
+                  value={formData.email || ""}
+                  onChange={handleChange}
+                  // required
                 />
                 <input
                   type="password"
                   placeholder="Password"
-                  className="input input-bordered w-full"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  className={`input input-bordered w-full ${
+                    emptyFields.password ? "input-error" : ""
+                  }`}
+                  name="password"
+                  value={formData.password || ""}
+                  onChange={handleChange}
+                  // required
                 />
-                <input
+                {/* <input
                   type="password"
                   placeholder="Confirm Password"
                   className="input input-bordered w-full"
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   required
-                />
+                /> */}
                 <button type="submit" className="btn btn-primary w-full">
                   Register
                 </button>
