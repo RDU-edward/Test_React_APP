@@ -3,7 +3,7 @@ import Loader from "./Loader";
 
 const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
   const [formData, setFormData] = useState({
-    adminId: "",
+    admin_id: "",
     adminPassword: "",
     closeFileDate: "",
     department: dept,

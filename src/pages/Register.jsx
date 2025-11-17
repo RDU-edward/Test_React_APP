@@ -111,7 +111,7 @@ export default function Register() {
             {responseMessage.message && (
               <div className="flex justify-center mt-4 px-4">
                 <div
-                  className={`alert w-86 ${
+                  className={`alert w-72 md:w-86 ${
                     responseMessage.type === "success"
                       ? "alert-success"
                       : "alert-error"

@@ -2,14 +2,32 @@ import { useEffect, useState } from "react";
 import CountDown from "./CountDown";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import dropdowndata from "../utils/dropdowndata";
+import axios from "axios";
+import Loader from "./Loader";
+import { useNavigate } from "react-router-dom";
 
 export default function CandidacyForm() {
+  const navigate = useNavigate();
   const [candidacyOpened, setCandidacyOpened] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [tabActive, setTabActive] = useState("tab1");
+
+  const loggedUser = JSON.parse(localStorage.getItem("UserData"));
+
   // const [closeDate, setCloseDate] = useState("");
-  const [formData, setFormData] = useState({
-    firstname: "",
-    lastname: "",
-    email: "",
+  const [candidateData, setCandidateData] = useState({
+    student_id: loggedUser?.student_id || "",
+    voters_id: loggedUser?.voters_id || "",
+    firstname: loggedUser?.firstname || "",
+    lastname: loggedUser?.lastname || "",
+    email: loggedUser?.email || "",
+    department: loggedUser?.department || "",
+    position: "",
+    party: "",
+    about_yourself: "",
+    purpose: "",
+    election_type: tabActive == "tab1" ? "SSG" : "BSIT",
   });
 
   const [countdown, setCountdown] = useState({
@@ -19,11 +37,9 @@ export default function CandidacyForm() {
     seconds: 0,
   });
 
-  const [tabActive, setTabActive] = useState("tab1");
-
   const handleTabClick = (tab) => {
-    const { firstname, lastname, email } = formData;
-    const hasChanges = firstname || lastname || email;
+    const { position, party, about_yourself, purpose } = candidateData;
+    const hasChanges = position || party || about_yourself || purpose;
 
     if (hasChanges) {
       const confirmSwitch = window.confirm(
@@ -33,14 +49,29 @@ export default function CandidacyForm() {
     }
 
     // Clear the form
-    setFormData({
-      firstname: "",
-      lastname: "",
-      email: "",
+    setCandidateData({
+      student_id: loggedUser?.student_id || "",
+      voters_id: loggedUser?.voters_id || "",
+      firstname: loggedUser?.firstname || "",
+      lastname: loggedUser?.lastname || "",
+      email: loggedUser?.email || "",
+      department: loggedUser?.department || "",
+      position: "",
+      party: "",
+      about_yourself: "",
+      purpose: "",
     });
 
     // Switch the tab
     setTabActive(tab);
+  };
+
+  const handleChanges = (e) => {
+    const { name, value } = e.target;
+    setCandidateData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const dept = tabActive == "tab1" ? "SSG" : "BSIT";
@@ -57,7 +88,7 @@ export default function CandidacyForm() {
       adminPassword: "testpass",
       closeFileDate: "2025-09-18T16:35",
       department: "BSIT",
-      filingStatus: "open",
+      filingStatus: "closed",
     },
   ];
 
@@ -97,6 +128,74 @@ export default function CandidacyForm() {
   }, [closeDate]);
   // }, [candidacyOpened, closeDate]);
 
+  const [emptyFields, setEmptyFields] = useState({
+    position: false,
+    party: false,
+    about_yourself: false,
+    purpose: false,
+  });
+
+  const [responseMessage, setResponseMessage] = useState({
+    message: "",
+    type: "",
+  }); // {message, type}
+
+  const handleSubmitCandidacy = async (e) => {
+    e.preventDefault();
+
+    const requiredFields = ["position", "about_yourself", "purpose"];
+
+    let newEmptyFields = { ...emptyFields };
+    // Check if any required field is empty and mark it in the state
+    requiredFields.forEach((field) => {
+      newEmptyFields[field] = !candidateData[field];
+    });
+
+    setEmptyFields(newEmptyFields);
+
+    // If any field is empty, prevent submission
+    if (requiredFields.some((field) => !candidateData[field])) {
+      console.log("Please fill in all required fields.");
+      return;
+    }
+    console.log(candidateData);
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        "http://localhost:3004/smart-vote/insert-candidates",
+        candidateData
+      );
+      if (response.data.success === true) {
+        setTimeout(() => {
+          setIsLoading(false);
+          setResponseMessage({
+            message: response.data.message || "Registration successful!",
+            type: "success", // or any other type for styling
+          });
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 3000);
+        setTimeout(() => {
+          navigate("/student/homepage");
+        }, 5000);
+      } else {
+        setTimeout(() => {
+          setIsLoading(false);
+          setResponseMessage({
+            message: response.data.message || "Login failed.",
+            type: "error",
+          });
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 3000);
+        setTimeout(() => {
+          setResponseMessage({ message: "", type: "" });
+        }, 5000);
+      }
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-base-200 overflow-auto">
       <Navbar />
@@ -109,6 +208,44 @@ export default function CandidacyForm() {
           </div>
         )}
       </div>
+
+      {/* Centered Loader with disabled backdrop click */}
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black opacity-75">
+          {/* Prevent interaction with content behind */}
+          <div className="pointer-events-none">
+            <Loader />
+          </div>
+        </div>
+      )}
+
+      {/* Conditionally render the response message */}
+      {responseMessage.message && (
+        <div className="flex justify-center mt-4 px-2">
+          <div
+            className={`alert w-72 md:w-86 ${
+              responseMessage.type === "success"
+                ? "alert-success"
+                : "alert-error"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 shrink-0 stroke-current"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>{responseMessage.message}</span>
+          </div>
+        </div>
+      )}
 
       {/* name of each tab group should be unique */}
 
@@ -152,32 +289,63 @@ export default function CandidacyForm() {
                   </label>
                   <input
                     type="text"
+                    className="input input-bordered w-full"
+                    name="student_id"
+                    placeholder="Student ID"
+                    value={candidateData.student_id}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label htmlFor="" className="text-xs">
+                    Voters ID
+                  </label>
+                  <input
+                    type="text"
+                    className="input input-bordered w-full"
+                    name="Voters_id"
+                    placeholder="voters_id"
+                    value={candidateData.voters_id}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label htmlFor="" className="text-xs">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    className="input input-bordered w-full"
                     name="firstname"
-                    placeholder="ID"
-                    className="input input-bordered w-full"
-                    required
+                    placeholder="First Name"
+                    value={candidateData.firstname}
+                    readOnly
                   />
                 </div>
                 <div>
                   <label htmlFor="" className="text-xs">
-                    Date
+                    Last Name
                   </label>
                   <input
                     type="text"
-                    placeholder="Date"
                     className="input input-bordered w-full"
-                    required
+                    name="lastname"
+                    placeholder="Last Name"
+                    value={candidateData.lastname}
+                    readOnly
                   />
                 </div>
                 <div>
                   <label htmlFor="" className="text-xs">
-                    Position
+                    Email
                   </label>
                   <input
                     type="text"
-                    placeholder="Position"
                     className="input input-bordered w-full"
-                    required
+                    name="email"
+                    placeholder="Email"
+                    value={candidateData.email}
+                    readOnly
                   />
                 </div>
                 <div>
@@ -186,9 +354,53 @@ export default function CandidacyForm() {
                   </label>
                   <input
                     type="text"
-                    placeholder="ID"
                     className="input input-bordered w-full"
+                    name="department"
+                    placeholder="Department/Course"
+                    value={candidateData.department}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label htmlFor="" className="text-xs">
+                    Position
+                  </label>
+                  <select
+                    type="text"
+                    className={`input input-bordered w-full ${
+                      emptyFields.position ? "input-error" : ""
+                    }`}
+                    name="position"
+                    placeholder="Position"
+                    value={candidateData.position || ""}
+                    onChange={handleChanges}
                     required
+                  >
+                    <option value="">Please Select</option>
+                    {tabActive === "tab1"
+                      ? dropdowndata.getDepPositions().map((pos) => (
+                          <option key={pos.id} value={pos.name}>
+                            {pos.name}
+                          </option>
+                        ))
+                      : dropdowndata.getSsgPositions().map((pos) => (
+                          <option key={pos.id} value={pos.name}>
+                            {pos.name}
+                          </option>
+                        ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="" className="text-xs">
+                    Parties
+                  </label>
+                  <input
+                    type="text"
+                    className="input input-bordered w-full"
+                    name="party"
+                    placeholder="Parties/Organization"
+                    value={candidateData.party}
+                    onChange={handleChanges}
                   />
                 </div>
               </div>
@@ -196,19 +408,25 @@ export default function CandidacyForm() {
               <div className="mt-4">
                 <div className="text-sm">Tell us about yourself</div>
                 <textarea
-                  name=""
-                  id=""
-                  className="border w-full rounded-md text-sm p-4"
+                  className={`border w-full rounded-md text-sm p-4 ${
+                    emptyFields.about_yourself ? "border-error" : ""
+                  }`}
+                  name="about_yourself"
                   placeholder="Enter a brief description"
+                  value={candidateData.about_yourself || ""}
+                  onChange={handleChanges}
                 ></textarea>
               </div>
               <div className="mt-4">
                 <div className="text-sm">Purpose of filing</div>
                 <textarea
-                  name=""
-                  id=""
-                  className="border w-full rounded-md text-sm p-4"
+                  className={`border w-full rounded-md text-sm p-4 ${
+                    emptyFields.purpose ? "border-error" : ""
+                  }`}
+                  name="purpose"
                   placeholder="Enter a brief description"
+                  value={candidateData.purpose || ""}
+                  onChange={handleChanges}
                 ></textarea>
               </div>
               <div>
@@ -219,7 +437,9 @@ export default function CandidacyForm() {
               </div>
             </div>
             <div className="flex gap-2 justify-center p-6">
-              <button className="btn btn-error">Submit Candidacy</button>
+              <button className="btn btn-error" onClick={handleSubmitCandidacy}>
+                Submit Candidacy
+              </button>
               <button className="btn ">Clear Form</button>
             </div>
           </form>

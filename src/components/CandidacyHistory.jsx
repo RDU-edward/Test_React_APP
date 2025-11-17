@@ -3,6 +3,8 @@ import { FaEye } from "react-icons/fa";
 import { FaMessage, FaRegCircleCheck, FaRegCircleXmark } from "react-icons/fa6";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import axios from "axios";
+import getLocalISODate from "../utils/libraries";
 
 const initialUsers = [
   {
@@ -55,6 +57,8 @@ export default function CandidacyHistory() {
   const [users, setUsers] = useState(initialUsers);
   const [selected, setSelected] = useState(null);
 
+  const loggedUser = JSON.parse(localStorage.getItem("UserData"));
+
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 5;
 
@@ -71,6 +75,23 @@ export default function CandidacyHistory() {
   //   const totalPages = Math.ceil(users.length / usersPerPage);
   //   const startIdx = (currentPage - 1) * usersPerPage;
   //   const paginatedUsers = users.slice(startIdx, startIdx + usersPerPage);
+  const [historyData, setHistoryData] = useState([]);
+  const getApplicationHistory = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3004/smart-vote/find-candidate/${loggedUser?.student_id}`
+      );
+      if (response.data.data.length !== 0) {
+        setHistoryData(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    getApplicationHistory();
+  }, []);
+  console.log(selected);
 
   return (
     <div className="flex flex-col min-h-screen bg-base-200 overflow-auto">
@@ -90,7 +111,7 @@ export default function CandidacyHistory() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user, index) => (
+              {historyData.map((data, index) => (
                 <tr
                   key={index}
                   className={`hover:bg-base-200 cursor-pointer transition ${
@@ -98,37 +119,39 @@ export default function CandidacyHistory() {
                   }`}
                 >
                   <td className="flex items-center gap-2 px-4 py-2">
-                    <img
+                    {/* <img
                       className="size-10 rounded-box"
-                      src={user.img}
-                      alt={user.name}
-                    />
-                    <span>{user.name}</span>
-                  </td>
-                  <td className="px-4 py-2">
-                    <span className="text-xs uppercase font-semibold">
-                      {user.position}
+                      src={data.img}
+                      alt={data.name}
+                    /> */}
+                    <span>
+                      {data.firstname} {data.lastname}
                     </span>
                   </td>
                   <td className="px-4 py-2">
                     <span className="text-xs uppercase font-semibold">
-                      {user.election}
+                      {data.position}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className="text-xs uppercase font-semibold">
+                      {data.election_type}
                     </span>
                   </td>
                   <td className="px-4 py-2">
                     {(() => {
                       const statusClass =
                         {
-                          Pending: "text-blue-500",
-                          Accepted: "text-green-600",
-                          Rejected: "text-red-500",
-                        }[user.status] || "";
+                          PENDING: "text-blue-500",
+                          ACCEPTED: "text-green-600",
+                          REJECTED: "text-red-500",
+                        }[data.status] || "";
 
                       return (
                         <span
                           className={`text-xs uppercase  ${statusClass} font-extrabold tracking-wide`}
                         >
-                          {user.status}
+                          {data.status}
                         </span>
                       );
                     })()}
@@ -136,7 +159,7 @@ export default function CandidacyHistory() {
                   <td className="px-4 py-2 flex gap-2">
                     <button
                       className="btn btn-sm btn-outline w-20"
-                      onClick={() => setSelected(user)}
+                      onClick={() => setSelected(data)}
                     >
                       <span>
                         <FaEye />
@@ -164,9 +187,9 @@ export default function CandidacyHistory() {
               {(() => {
                 const statusClass =
                   {
-                    Pending: "text-blue-500",
-                    Accepted: "text-green-600",
-                    Rejected: "text-red-500",
+                    PENDING: "text-blue-500",
+                    ACCEPTED: "text-green-600",
+                    REJECTED: "text-red-500",
                   }[selected?.status] || "";
 
                 return (
@@ -180,22 +203,26 @@ export default function CandidacyHistory() {
               <div className="mt-2">
                 <form method="dialog">
                   <div className="">
-                    <img
+                    {/* <img
                       className="size-12 rounded-box"
                       src={selected.img}
                       alt={selected.name}
-                    />
+                    /> */}
                     <div>
-                      <div className="font-bold text-lg">{selected.name}</div>
+                      <div className="font-bold text-lg">
+                        {selected.firstname} {selected.lastname}
+                      </div>
                       <div className="text-xs uppercase font-semibold opacity-60">
                         {selected.status}
                       </div>
                     </div>
                   </div>
-                  <div className="text-sm">{selected.details}</div>
+                  <div className="text-sm mt-6">{selected.about_yourself}</div>
+                  <div className="text-sm mt-6">{selected.purpose}</div>
+                  <div className="text-sm mt-6">{selected.filed_date}</div>
 
                   {/* if status is rejected */}
-                  {selected?.status === "Rejected" && (
+                  {selected?.status === "REJECTED" && (
                     <div className="border border-red-500 bg-red-200 h-auto p-2 mt-4 rounded-md ">
                       <div className="flex font-bold text-red-500 items-center gap-2">
                         <FaRegCircleXmark className="text-xl" />

@@ -3,16 +3,34 @@ import { Link, useNavigate } from "react-router-dom";
 import Hero from "../components/Hero";
 import testImage from "../assets/unsplash.jpg";
 import Loader from "../components/Loader";
+import axios from "axios";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [id, setId] = useState("");
-  const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
+
+  const [loginData, setLoginData] = useState({
+    student_id: "",
+    password: "",
+  });
+
+  const [error, setError] = useState(false);
+  const [responseMessage, setResponseMessage] = useState({
+    message: "",
+    type: "",
+  }); // {message, type}
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
-
     setIsLoading(true);
     setTimeout(() => {
       localStorage.setItem("User", "Admin");
@@ -26,13 +44,54 @@ export default function LoginForm() {
   const studentLogin = async (e) => {
     e.preventDefault();
 
-    setIsLoading(true);
-    setTimeout(() => {
-      localStorage.setItem("User", "Student");
-      navigate("/student/homepage");
+    if (loginData.student_id === "" || loginData.password === "") {
+      setError(true);
+      return;
+    }
 
-      setIsLoading(false);
-    }, 10000);
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        "http://localhost:3004/smart-vote/voters-login",
+        loginData
+      );
+      if (response.data.success === true) {
+        setTimeout(() => {
+          setIsLoading(false);
+          localStorage.setItem("UserData", JSON.stringify(response.data.data));
+          setResponseMessage({
+            message: response.data.message || "Registration successful!",
+            type: "success", // or any other type for styling
+          });
+        }, 3000);
+        setTimeout(() => {
+          navigate("/student/homepage");
+        }, 5000);
+      } else {
+        setTimeout(() => {
+          setIsLoading(false);
+          setResponseMessage({
+            message: response.data.message || "Login failed.",
+            type: "error",
+          });
+        }, 3000);
+      }
+
+      // Set a timeout to remove the responseMessage after 5 seconds
+      setTimeout(() => {
+        setResponseMessage({ message: "", type: "" }); // Clear message after 5 seconds
+      }, 5000); // 5000 milliseconds = 5 seconds
+    } catch (error) {
+      console.error(error);
+    }
+
+    // setIsLoading(true);
+    // setTimeout(() => {
+    //   localStorage.setItem("User", "Student");
+    //   navigate("/student/homepage");
+
+    //   setIsLoading(false);
+    // }, 10000);
   };
 
   // const handleLogin = async (e) => {
@@ -62,6 +121,33 @@ export default function LoginForm() {
         {/* Login Card */}
         <div className="w-full md:w-1/2 flex items-center justify-center p-4">
           <div className="card w-96 bg-base-100 shadow-xl z-10">
+            {/* Conditionally render the response message */}
+            {responseMessage.message && (
+              <div className="flex justify-center mt-4 px-2">
+                <div
+                  className={`alert w-72 md:w-86 ${
+                    responseMessage.type === "success"
+                      ? "alert-success"
+                      : "alert-error"
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 shrink-0 stroke-current"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>{responseMessage.message}</span>
+                </div>
+              </div>
+            )}
             <div className="card-body">
               <h2 className="card-title justify-center text-2xl tracking-widest">
                 Smart Vote
@@ -69,18 +155,24 @@ export default function LoginForm() {
               <form className="space-y-4 mt-6">
                 <input
                   type="text"
+                  className={`input input-bordered w-full ${
+                    error ? "input-error" : ""
+                  }`}
                   placeholder="ID"
-                  className="input input-bordered w-full"
-                  value={id}
-                  onChange={(e) => setId(e.target.value)}
+                  name="student_id"
+                  value={loginData.student_id || ""}
+                  onChange={handleChange}
                   required
                 />
                 <input
                   type="password"
+                  className={`input input-bordered w-full ${
+                    error ? "input-error" : ""
+                  }`}
                   placeholder="Password"
-                  className="input input-bordered w-full"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
+                  value={loginData.password || ""}
+                  onChange={handleChange}
                   required
                 />
                 <button
