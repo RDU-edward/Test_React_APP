@@ -124,29 +124,30 @@ export default function LoginForm() {
         <div className="w-full md:w-1/2 flex items-center justify-center p-4">
           <div className="card w-96 bg-base-100 shadow-xl z-10">
             {/* Conditionally render the response message */}
-            {responseMessage.message && (
-              <div className="flex justify-center mt-4 px-2">
-                <div
-                  className={`alert w-72 md:w-86 ${
-                    responseMessage.type === "success"
-                      ? "alert-success"
-                      : "alert-error"
-                  }`}
-                >
-                  {responseMessage.type === "success" ? (
-                    <FaCheckCircle />
-                  ) : (
-                    <FaCircleXmark />
-                  )}
 
-                  <span>{responseMessage.message}</span>
-                </div>
-              </div>
-            )}
             <div className="card-body">
               <h2 className="card-title justify-center text-2xl tracking-widest">
                 Smart Vote
               </h2>
+              {responseMessage.message && (
+                <div className="flex justify-center mt-4 px-2">
+                  <div
+                    className={`alert w-72 md:w-86 ${
+                      responseMessage.type === "success"
+                        ? "alert-success"
+                        : "alert-error"
+                    }`}
+                  >
+                    {responseMessage.type === "success" ? (
+                      <FaCheckCircle />
+                    ) : (
+                      <FaCircleXmark />
+                    )}
+
+                    <span>{responseMessage.message}</span>
+                  </div>
+                </div>
+              )}
               <form className="space-y-4 mt-6">
                 <input
                   type="text"
