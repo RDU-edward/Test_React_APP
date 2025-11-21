@@ -22,6 +22,9 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const adminData = JSON.parse(localStorage.getItem("AdminData"));
+  console.log(adminData[0].role);
+
   useEffect(() => {
     if (location.pathname.startsWith("/admin/candidacy")) {
       setCandidacyOpen(true);
@@ -36,6 +39,11 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
     }
   }, [location.pathname]);
 
+  const role = adminData[0].role;
+  const departments = adminData[0]?.departments.split(",");
+
+  console.log(departments);
+
   // Sidebar link data
   const links = [
     {
@@ -43,11 +51,17 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
       label: "Dashboard",
       icon: <FaKaaba />,
     },
-    {
-      to: "/admin/user-management",
-      label: "User Management",
-      icon: <FaWhmcs />,
-    },
+
+    //* Show only User Management if SuperAdmin
+    ...(role === "SUPERADMIN"
+      ? [
+          {
+            to: "/admin/user-management",
+            label: "User Management",
+            icon: <FaWhmcs />,
+          },
+        ]
+      : []),
   ];
 
   const candidacyLinks = [
@@ -56,6 +70,7 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
       label: "SSG",
       icon: <FaPlus />,
     },
+
     {
       to: "/admin/candidacy/bsit",
       label: "BSIT",
@@ -98,9 +113,20 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem("User");
+    localStorage.clear();
     navigate("/login");
   };
+
+  //* Filter the links to include only those where the label is in the dept array
+  const filteredCandidacyLinks = candidacyLinks.filter((link) =>
+    departments.includes(link.label)
+  );
+  const filteredElectionLinks = electionLinks.filter((link) =>
+    departments.includes(link.label)
+  );
+
+  console.log(filteredCandidacyLinks);
+  console.log(candidacyLinks);
 
   // Desktop Sidebar
   return (
@@ -131,31 +157,34 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
             </Link>
           ))}
           {/* Candidacy expandable section */}
-          <button
-            type="button"
-            className="btn btn-ghost w-full justify-start flex items-center gap-2"
-            onClick={() => {
-              setCandidacyOpen((prev) => !prev);
-              if (!candidacyOpen) {
-                navigate("/admin/candidacy/ssg");
-              }
-            }}
-          >
-            <span className="group relative">
-              {/* Candidacy icon */}
-              <FaPlus />
-              <span className="absolute left-8 top-1/2 -translate-y-1/2 px-2 py-1 rounded bg-gray-900 text-white text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none md:hidden z-50">
+          {/* if role is not super admin show these  */}
+          {role !== "SUPERADMIN" && (
+            <button
+              type="button"
+              className="btn btn-ghost w-full justify-start flex items-center gap-2"
+              onClick={() => {
+                setCandidacyOpen((prev) => !prev);
+                if (!candidacyOpen) {
+                  navigate("/admin/candidacy/ssg");
+                }
+              }}
+            >
+              <span className="group relative">
+                <FaPlus />
+                <span className="absolute left-8 top-1/2 -translate-y-1/2 px-2 py-1 rounded bg-gray-900 text-white text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none md:hidden z-50">
+                  Candidacy
+                </span>
+              </span>
+              <span className="font-semibold flex-1 text-left hidden md:inline">
                 Candidacy
               </span>
-            </span>
-            <span className="font-semibold flex-1 text-left hidden md:inline">
-              Candidacy
-            </span>
-            {candidacyOpen ? <FaChevronDown /> : <FaChevronUp />}
-          </button>
+              {candidacyOpen ? <FaChevronDown /> : <FaChevronUp />}
+            </button>
+          )}
+
           {candidacyOpen && (
             <div className="pl-6 mt-2 space-y-1">
-              {candidacyLinks.map((link) => (
+              {filteredCandidacyLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
@@ -177,31 +206,34 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
             </div>
           )}
           {/* Election expandable section */}
-          <button
-            type="button"
-            className="btn btn-ghost w-full justify-start flex items-center gap-2"
-            onClick={() => {
-              setElectionOpen((prev) => !prev);
-              if (!electionOpen) {
-                navigate("/admin/election/ssg");
-              }
-            }}
-          >
-            <span className="group relative">
-              {/* Candidacy icon */}
-              <FaWhmcs />
-              <span className="absolute left-8 top-1/2 -translate-y-1/2 px-2 py-1 rounded bg-gray-900 text-white text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none md:hidden z-50">
+          {role !== "SUPERADMIN" && (
+            <button
+              type="button"
+              className="btn btn-ghost w-full justify-start flex items-center gap-2"
+              onClick={() => {
+                setElectionOpen((prev) => !prev);
+                if (!electionOpen) {
+                  navigate("/admin/election/ssg");
+                }
+              }}
+            >
+              <span className="group relative">
+                {/* Candidacy icon */}
+                <FaWhmcs />
+                <span className="absolute left-8 top-1/2 -translate-y-1/2 px-2 py-1 rounded bg-gray-900 text-white text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none md:hidden z-50">
+                  Election
+                </span>
+              </span>
+              <span className="font-semibold flex-1 text-left hidden md:inline">
                 Election
               </span>
-            </span>
-            <span className="font-semibold flex-1 text-left hidden md:inline">
-              Election
-            </span>
-            {electionOpen ? <FaChevronDown /> : <FaChevronUp />}
-          </button>
+              {electionOpen ? <FaChevronDown /> : <FaChevronUp />}
+            </button>
+          )}
+
           {electionOpen && (
             <div className="pl-6 mt-2 space-y-1">
-              {electionLinks.map((link) => (
+              {filteredElectionLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
@@ -318,7 +350,7 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
             </button>
             {candidacyOpen && (
               <div className="pl-2 mt-2 space-y-1">
-                {candidacyLinks.map((link) => (
+                {filteredCandidacyLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
@@ -393,11 +425,9 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
               <div
                 className="tooltip tooltip-bottom border p-1 w-full flex justify-center rounded"
                 data-tip="Logout"
+                onClick={handleLogout}
               >
-                <FaSignOutAlt
-                  className="text-2xl cursor-pointer"
-                  onClick={() => navigate("/login")}
-                />
+                <FaSignOutAlt className="text-2xl cursor-pointer" />
               </div>
             </div>
             <ThemeSwitcher />

@@ -31,15 +31,51 @@ export default function LoginForm() {
     }));
   };
 
-  const handleAdminLogin = (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => {
-      localStorage.setItem("User", "Admin");
-      navigate("/admin");
+  const handleAdminLogin = async (e) => {
+    if (loginData.student_id === "" || loginData.password === "") {
+      setError(true);
+      return;
+    }
 
-      setIsLoading(false);
-    }, 10000);
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        "http://localhost:3004/smart-vote/admin-login",
+        {
+          admin_id: loginData.student_id,
+          password: loginData.password,
+        }
+      );
+      if (response.data.success === true) {
+        setTimeout(() => {
+          setIsLoading(false);
+          localStorage.setItem("AdminData", JSON.stringify(response.data.data));
+          setResponseMessage({
+            message: response.data.message || "Login successful!",
+            type: "success", // or any other type for styling
+          });
+        }, 3000);
+        setTimeout(() => {
+          navigate("/admin");
+        }, 5000);
+      } else {
+        setTimeout(() => {
+          setIsLoading(false);
+          setResponseMessage({
+            message: response.data.message || "Login failed.",
+            type: "error",
+          });
+        }, 3000);
+      }
+
+      // Set a timeout to remove the responseMessage after 5 seconds
+      setTimeout(() => {
+        setResponseMessage({ message: "", type: "" }); // Clear message after 5 seconds
+      }, 5000); // 5000 milliseconds = 5 seconds
+    } catch (error) {
+      console.error(error);
+    }
     // Add admin login logic
   };
 
@@ -62,7 +98,7 @@ export default function LoginForm() {
           setIsLoading(false);
           localStorage.setItem("UserData", JSON.stringify(response.data.data));
           setResponseMessage({
-            message: response.data.message || "Registration successful!",
+            message: response.data.message || "Login successful!",
             type: "success", // or any other type for styling
           });
         }, 3000);

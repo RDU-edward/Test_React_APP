@@ -103,7 +103,7 @@ export const SsgCandidacy = () => {
       candidate.firstname +
       candidate.lastname.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
-      statusFilter === "All" || candidate.status === statusFilter;
+      statusFilter === "All" || candidate.status === statusFilter.toUpperCase();
     return matchesSearch && matchesStatus;
   });
 
@@ -159,6 +159,7 @@ export const SsgCandidacy = () => {
             message: response.data.message,
             type: "success",
           });
+          setRemarks("");
         }, 3000);
         setTimeout(() => {
           setResponseMessage({ message: "", type: "" }); // Clear message after 5 seconds
@@ -186,7 +187,7 @@ export const SsgCandidacy = () => {
     if (status && remarks.trim() !== "") {
       updateCandidate(); // Call updateCandidate only if remarks are not empty
     }
-  }, [status, remarks]); // Trigger when status or remarks change
+  }, [status]); // Trigger when status or remarks change
 
   return (
     <div className="flex flex-col min-h-screen bg-base-200 overflow-auto">
@@ -310,7 +311,7 @@ export const SsgCandidacy = () => {
                   >
                     <option value="All">All Status</option>
                     <option value="Pending">Pending</option>
-                    <option value="Accepted">Accepted</option>
+                    <option value="Approved">Approved</option>
                     <option value="Rejected">Rejected</option>
                   </select>
                 </div>
