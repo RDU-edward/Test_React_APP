@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Loader from "./Loader";
+import axios from "axios";
 
 const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
+  const admin = JSON.parse(localStorage.getItem("AdminData"));
+  const [candidacySchedule, setCandidacySchedule] = useState();
   const [formData, setFormData] = useState({
-    admin_id: "",
-    adminPassword: "",
-    closeFileDate: "",
-    department: dept,
-    filingStatus: "open",
+    close_date: "",
+    candidacy_type: dept,
+    status: "OPEN",
+    opened_by: admin[0]?.admin_id,
   });
   //
 
@@ -18,20 +20,62 @@ const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
       [name]: value,
     }));
   };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
 
-    localStorage.setItem("candidacyData", JSON.stringify(formData));
-    setTimeout(() => {
+  //* Get Candidacy Schedule
+  const getCandidacySchedule = async (e) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3004/smart-vote/get-candidacy-schedule/${dept}`
+      );
+
+      if (response.data.success === true) {
+        setCandidacySchedule(response.data.data[0]);
+        localStorage.setItem(
+          "candidacyData",
+          JSON.stringify(response.data.data[0])
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getCandidacySchedule();
+  }, [dept]);
+
+  useEffect(() => {
+    if (candidacySchedule?.status === "OPEN") {
       setCandidacyOpened(true);
       setShowCandidacyForm(false);
-    }, 3000);
+    }
+  }, [candidacySchedule]);
+
+  //* Updated Candidacy
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3004/smart-vote/update-candidacy",
+        formData
+      );
+      if (response.data.success === true) {
+        localStorage.setItem("candidacyData", JSON.stringify(formData));
+        setTimeout(() => {
+          setCandidacyOpened(true);
+          setShowCandidacyForm(false);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
+
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <div className="mt-30 max-w-md h-96 mx-auto bg-base-100 p-6 rounded-xl shadow-lg">
+    <div className="max-w-md h-auto mx-auto bg-base-100 p-6 rounded-xl shadow-lg mt-20">
       {isLoading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black opacity-75">
           {/* Prevent interaction with content behind */}
@@ -45,7 +89,7 @@ const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
         Open {dept} Filing
       </h2>
       <form className="space-y-4">
-        <input
+        {/* <input
           type="text"
           placeholder="Admin ID"
           name="adminId"
@@ -62,13 +106,13 @@ const OpenFiling = ({ dept, setCandidacyOpened, setShowCandidacyForm }) => {
           value={formData.adminPassword}
           onChange={handleChange}
           required
-        />
+        /> */}
         <label className="block font-medium">Candidate Filing Close Date</label>
         <input
           type="datetime-local"
           className="input input-bordered w-full"
-          name="closeFileDate"
-          value={formData.closeFileDate}
+          name="close_date"
+          value={formData.close_date}
           onChange={handleChange}
           required
         />

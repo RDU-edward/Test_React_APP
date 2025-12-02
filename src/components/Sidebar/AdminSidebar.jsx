@@ -22,8 +22,15 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const adminData = JSON.parse(localStorage.getItem("AdminData"));
-  console.log(adminData[0].role);
+  const [adminData, setAdminData] = useState(null);
+  const [role, setRole] = useState(null);
+  const [departments, setDepartments] = useState(null);
+
+  useEffect(() => {
+    if (location.pathname.startsWith("/admin")) {
+      setAdminData(JSON.parse(localStorage.getItem("AdminData")));
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (location.pathname.startsWith("/admin/candidacy")) {
@@ -39,10 +46,12 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
     }
   }, [location.pathname]);
 
-  const role = adminData[0].role;
-  const departments = adminData[0]?.departments.split(",");
-
-  console.log(departments);
+  useEffect(() => {
+    if (adminData) {
+      setRole(adminData[0].role);
+      setDepartments(adminData[0]?.departments.split(","));
+    }
+  }, [adminData]);
 
   // Sidebar link data
   const links = [
@@ -118,15 +127,12 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
   };
 
   //* Filter the links to include only those where the label is in the dept array
-  const filteredCandidacyLinks = candidacyLinks.filter((link) =>
-    departments.includes(link.label)
+  const filteredCandidacyLinks = candidacyLinks.filter(
+    (link) => departments && departments.includes(link.label)
   );
-  const filteredElectionLinks = electionLinks.filter((link) =>
-    departments.includes(link.label)
+  const filteredElectionLinks = electionLinks.filter(
+    (link) => departments && departments.includes(link.label)
   );
-
-  console.log(filteredCandidacyLinks);
-  console.log(candidacyLinks);
 
   // Desktop Sidebar
   return (
@@ -385,7 +391,7 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
             </button>
             {electionOpen && (
               <div className="pl-2 mt-2 space-y-1">
-                {electionLinks.map((link) => (
+                {filteredElectionLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}

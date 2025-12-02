@@ -107,9 +107,9 @@ export const SsgElection = () => {
   });
 
   const data = JSON.parse(localStorage.getItem("electionData"));
-  const closeDate = data?.closeElectionDate;
+  const closeDate = data?.close_date;
   useEffect(() => {
-    if (data && data?.electionStatus === "open") {
+    if (data && data?.status === "OPEN") {
       setElectionOpened(true);
       setShowElectionForm(false);
     } else {

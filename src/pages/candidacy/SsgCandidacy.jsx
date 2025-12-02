@@ -15,6 +15,7 @@ import { FaCircleXmark, FaMessage, FaRegCircleXmark } from "react-icons/fa6";
 import Footer from "../../components/Footer";
 import axios from "axios";
 import Loader from "../../components/Loader";
+import { sendMail } from "../../utils/mailer";
 
 const dept = "SSG";
 
@@ -44,9 +45,9 @@ export const SsgCandidacy = () => {
   });
 
   const data = JSON.parse(localStorage.getItem("candidacyData"));
-  const closeDate = data?.closeFileDate;
+  const closeDate = data?.close_date;
   useEffect(() => {
-    if (data && data.filingStatus === "open") {
+    if (data && data.status === "OPEN") {
       setCandidacyOpened(true);
       setShowCandidacyForm(false);
     } else {
@@ -97,6 +98,74 @@ export const SsgCandidacy = () => {
     getCandidate();
   }, []);
 
+  console.log(candidacyOpened);
+  console.log(showCandidacyForm);
+
+  //* Count by Status
+  const countApprovedCandidates = candidates.filter(
+    (item) => item.status === "APPROVED"
+  );
+  const countRejectedCandidates = candidates.filter(
+    (item) => item.status === "REJECTED"
+  );
+  const countPendingCandidates = candidates.filter(
+    (item) => item.status === "PENDING"
+  );
+
+  //* Count Pending Candidate by Departments
+  const ccsPendingCandidates = countPendingCandidates.filter(
+    (item) => item.department === "CCS"
+  );
+  const ctePendingCandidates = countPendingCandidates.filter(
+    (item) => item.department === "CTE"
+  );
+  const cbaPendingCandidates = countPendingCandidates.filter(
+    (item) => item.department === "CBA"
+  );
+  const bsitPendingCandidates = countPendingCandidates.filter(
+    (item) => item.department === "BSIT"
+  );
+  const cjePendingCandidates = countPendingCandidates.filter(
+    (item) => item.department === "CJE"
+  );
+  //* Count Approved Candidate by Departments
+  const ccsApprovedCandidates = countApprovedCandidates.filter(
+    (item) => item.department === "CCS"
+  );
+  const cteApprovedCandidates = countApprovedCandidates.filter(
+    (item) => item.department === "CTE"
+  );
+  const cbaApprovedCandidates = countApprovedCandidates.filter(
+    (item) => item.department === "CBA"
+  );
+  const bsitApprovedCandidates = countApprovedCandidates.filter(
+    (item) => item.department === "BSIT"
+  );
+  const cjeApprovedCandidates = countApprovedCandidates.filter(
+    (item) => item.department === "CJE"
+  );
+  //* Count Rejected Candidate by Departments
+  const ccsRejectedCandidates = countRejectedCandidates.filter(
+    (item) => item.department === "CCS"
+  );
+  const cteRejectedCandidates = countRejectedCandidates.filter(
+    (item) => item.department === "CTE"
+  );
+  const cbaRejectedCandidates = countRejectedCandidates.filter(
+    (item) => item.department === "CBA"
+  );
+  const bsitRejectedCandidates = countRejectedCandidates.filter(
+    (item) => item.department === "BSIT"
+  );
+  const cjeRejectedCandidates = countRejectedCandidates.filter(
+    (item) => item.department === "CJE"
+  );
+
+  // console.log(countApprovedCandidates);
+
+  useEffect(() => {
+    console.log(ccsApprovedCandidates.length);
+  }, []);
   // Filter logic
   const filteredCandidates = candidates.filter((candidate) => {
     const matchesSearch =
@@ -139,6 +208,21 @@ export const SsgCandidacy = () => {
     setStatus("REJECTED"); // Set the status to "REJECTED"
   };
 
+  const emailData = {
+    to: "joshuacatapan2003@gmail.com",
+    subject: "Smart Vote Filing Of Candidacy",
+    text: `Hello! ${
+      selectedCandidate?.firstname + " " + selectedCandidate?.lastname
+    } your application for the position of ${
+      selectedCandidate?.position
+    } has been ${status} by the Department Admin.`,
+    html: `Hello! ${
+      selectedCandidate?.firstname + " " + selectedCandidate?.lastname
+    } your application for the position of ${
+      selectedCandidate?.position
+    } has been ${status} by the Department Admin.`,
+  };
+
   const updateCandidate = async () => {
     document.getElementById("my_modal_4").close();
     try {
@@ -154,12 +238,16 @@ export const SsgCandidacy = () => {
       if (response.data.success === true) {
         setTimeout(() => {
           setIsLoading(false);
+          setStatus("");
           setSelectedCandidate(null);
           setResponseMessage({
             message: response.data.message,
             type: "success",
           });
+          setShowRejectionForm(false);
+          window.scroll({ top: 0, behavior: "smooth" });
           setRemarks("");
+          // sendMail(emailData);
         }, 3000);
         setTimeout(() => {
           setResponseMessage({ message: "", type: "" }); // Clear message after 5 seconds
@@ -239,14 +327,18 @@ export const SsgCandidacy = () => {
                   <h2 className="text-sm font-medium">Pending Candidates</h2>
                   <div className="flex items-center justify-between">
                     <h1 className="text-4xl font-extrabold text-blue-500">
-                      80
+                      {countPendingCandidates.length}
                     </h1>
                     <FaLayerGroup className="text-2xl" />
                   </div>
                   <div>Departments</div>
                   <div>
                     <div className="font-bold tracking-wider">
-                      CCS - 12, CTE - 15, CBA - 20, PSYCH - 10, CJE- 8
+                      CCS - {ccsPendingCandidates.length}, CTE -{" "}
+                      {ctePendingCandidates.length}, CBA -{" "}
+                      {cbaPendingCandidates.length}, BSIT -{" "}
+                      {bsitPendingCandidates.length}, CJE-{" "}
+                      {cjePendingCandidates.length}
                     </div>
                   </div>
                 </div>
@@ -255,13 +347,19 @@ export const SsgCandidacy = () => {
                 <div className="card-body px-6">
                   <h2 className="text-sm font-medium">Rejected Candidates</h2>
                   <div className="flex items-center justify-between">
-                    <h1 className="text-4xl font-extrabold text-red-500">34</h1>
+                    <h1 className="text-4xl font-extrabold text-red-500">
+                      {countRejectedCandidates.length}
+                    </h1>
                     <FaCube className="text-2xl" />
                   </div>
                   <div>Departments</div>
                   <div>
                     <div className="font-bold tracking-wider">
-                      CCS - 12, CTE - 15, CBA - 20, PSYCH - 10, CJE- 8
+                      CCS - {ccsRejectedCandidates.length}, CTE -{" "}
+                      {cteRejectedCandidates.length}, CBA -{" "}
+                      {cbaRejectedCandidates.length}, BSIT -{" "}
+                      {cbaRejectedCandidates.length} , CJE -{" "}
+                      {cjeRejectedCandidates.length}
                     </div>
                   </div>
                 </div>
@@ -269,17 +367,21 @@ export const SsgCandidacy = () => {
 
               <div className="card w-full bg-base-100 card-xs shadow-sm ">
                 <div className="card-body px-6">
-                  <h2 className="text-sm font-medium">Accepted Candidates</h2>
+                  <h2 className="text-sm font-medium">Approved Candidates</h2>
                   <div className="flex items-center justify-between">
                     <h1 className="text-4xl font-extrabold text-green-500">
-                      20
+                      {countApprovedCandidates.length}
                     </h1>
                     <FaFileSignature className="text-2xl" />
                   </div>
                   <div>Departments</div>
                   <div>
                     <div className="font-bold tracking-wider">
-                      CCS - 12, CTE - 15, CBA - 20, PSYCH - 10, CJE- 8
+                      CCS - {ccsApprovedCandidates.length}, CTE -{" "}
+                      {cteApprovedCandidates.length}, CBA -{" "}
+                      {cbaApprovedCandidates.length}, BSIT -{" "}
+                      {bsitApprovedCandidates.length}, CJE-{" "}
+                      {cjeApprovedCandidates.length}
                     </div>
                   </div>
                 </div>

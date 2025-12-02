@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import testImage from "../assets/unsplash.jpg";
 import axios from "axios";
 import { FaCheckCircle } from "react-icons/fa";
 import { FaCircleXmark } from "react-icons/fa6";
+import Webcam from "react-webcam";
+import * as faceapi from "face-api.js";
 export default function Register() {
-  const [id, setId] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-
+  const webcamRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [status, setStatus] = useState("Loading models...");
+  const [modelsLoaded, setModelsLoaded] = useState(false);
   const [formData, setFormData] = useState({
     student_id: "",
     firstname: "",
@@ -39,6 +41,132 @@ export default function Register() {
     message: "",
     type: "",
   }); // {message, type}
+
+  const [open, setOpen] = useState(false);
+
+  const handleFacial = () => {
+    const requiredFields = [
+      "student_id",
+      "firstname",
+      "lastname",
+      "department",
+      "email",
+      "password",
+    ];
+
+    let newEmptyFields = { ...emptyFields };
+    // Check if any required field is empty and mark it in the state
+    requiredFields.forEach((field) => {
+      newEmptyFields[field] = !formData[field];
+    });
+
+    setEmptyFields(newEmptyFields);
+
+    // If any field is empty, prevent submission
+    if (requiredFields.some((field) => !formData[field])) {
+      console.log("Please fill in all required fields.");
+      return;
+    }
+
+    setOpen(true);
+  };
+
+  // Load models on mount
+  useEffect(() => {
+    const loadModels = async () => {
+      await Promise.all([
+        faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
+        faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+        faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
+      ]);
+      setStatus("Models loaded ✅");
+      setModelsLoaded(true);
+    };
+    loadModels();
+  }, [open]);
+
+  // Draw face detections continuously on canvas
+  useEffect(() => {
+    let intervalId;
+
+    if (modelsLoaded) {
+      intervalId = setInterval(async () => {
+        if (
+          webcamRef.current &&
+          webcamRef.current.video.readyState === 4 // video is ready
+        ) {
+          const video = webcamRef.current.video;
+          const canvas = canvasRef.current;
+
+          // Detect faces with landmarks
+          const detections = await faceapi
+            .detectAllFaces(video)
+            .withFaceLandmarks();
+
+          // Resize canvas to video dimensions
+          const dims = {
+            width: video.videoWidth,
+            height: video.videoHeight,
+          };
+          faceapi.matchDimensions(canvas, dims);
+
+          const resizedDetections = faceapi.resizeResults(detections, dims);
+
+          // Clear canvas before drawing
+          const ctx = canvas.getContext("2d");
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Draw detections & landmarks
+          faceapi.draw.drawDetections(canvas, resizedDetections);
+          faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+        }
+      }, 100); // update every 100ms
+    }
+
+    return () => clearInterval(intervalId);
+  }, [modelsLoaded]);
+
+  // Capture face descriptor and save with name
+  const captureAndRegister = async () => {
+    // if (!) {
+    //   setStatus("Please enter a name.");
+    //   return;
+    // }
+
+    if (!webcamRef.current || webcamRef.current.video.readyState !== 4) {
+      setStatus("Camera not ready.");
+      return;
+    }
+
+    const video = webcamRef.current.video;
+
+    const detection = await faceapi
+      .detectSingleFace(video)
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+    if (!detection) {
+      setStatus("No face detected. Please try again.");
+      return;
+    }
+
+    // Convert descriptor to array for storage
+    const descriptor = Array.from(detection.descriptor);
+
+    // Load existing DB or create new
+    const db = JSON.parse(localStorage.getItem("face-db")) || [];
+    // db.push({ l, descriptor });
+    db.push({ ...formData, descriptor });
+    localStorage.setItem("face-db", JSON.stringify(db));
+
+    setTimeout(() => {
+      setOpen(false);
+    }, 2000);
+
+    setStatus(
+      `✅ Face registered for ${formData?.firstname} ${formData?.lastname}`
+    );
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -73,7 +201,6 @@ export default function Register() {
         "http://localhost:3004/smart-vote/voters",
         formData
       );
-      console.log(response.data);
       if (response.data.success === true) {
         setResponseMessage({
           message: response.data.message || "Registration successful!",
@@ -103,6 +230,41 @@ export default function Register() {
       console.error(error);
     }
   };
+
+  if (open) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4 space-y-4">
+        <h1 className="text-2xl text-gray-600 font-bold">Register Face</h1>
+        <div className="relative w-[640px] h-[480px]">
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            width={640}
+            height={480}
+            videoConstraints={{ facingMode: "user" }}
+            className="rounded shadow"
+          />
+          <canvas
+            ref={canvasRef}
+            width={640}
+            height={480}
+            className="absolute top-0 left-0 z-10"
+          />
+        </div>
+
+        <button
+          onClick={captureAndRegister}
+          className="btn btn-primary"
+          disabled={!modelsLoaded}
+        >
+          {modelsLoaded ? "Register Face" : "Loading..."}
+        </button>
+
+        <p className="text-green-600">{status}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-gray-500 to-black">
@@ -209,6 +371,12 @@ export default function Register() {
                   onChange={(e) => setConfirm(e.target.value)}
                   required
                 /> */}
+                <button
+                  className="btn btn-warning text-white w-full"
+                  onClick={handleFacial}
+                >
+                  Register Face
+                </button>
                 <button type="submit" className="btn btn-primary w-full">
                   Register
                 </button>

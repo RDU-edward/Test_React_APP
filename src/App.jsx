@@ -10,7 +10,6 @@ import { FaBars } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
 import { BsitCandidacy } from "./pages/candidacy/BsitCandidacy";
 import { SsgElection } from "./pages/election/SsgElection";
-import StudentSidebar from "./components/Sidebar/StudentSidebar";
 import StudentDashboard from "./pages/SmartvoteElection";
 import CandidacyHistory from "./components/CandidacyHistory";
 import Hero from "./components/Hero";

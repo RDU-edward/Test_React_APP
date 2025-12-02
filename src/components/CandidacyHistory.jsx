@@ -143,7 +143,7 @@ export default function CandidacyHistory() {
                       const statusClass =
                         {
                           PENDING: "text-blue-500",
-                          ACCEPTED: "text-green-600",
+                          APPROVED: "text-green-600",
                           REJECTED: "text-red-500",
                         }[data.status] || "";
 
@@ -188,7 +188,7 @@ export default function CandidacyHistory() {
                 const statusClass =
                   {
                     PENDING: "text-blue-500",
-                    ACCEPTED: "text-green-600",
+                    APPROVED: "text-green-600",
                     REJECTED: "text-red-500",
                   }[selected?.status] || "";
 

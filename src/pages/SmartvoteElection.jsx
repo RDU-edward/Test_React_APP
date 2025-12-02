@@ -1,72 +1,136 @@
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import { FaChevronCircleLeft, FaChevronLeft } from "react-icons/fa";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import {
+  FaCheckCircle,
+  FaChevronCircleLeft,
+  FaChevronLeft,
+} from "react-icons/fa";
+import { FaArrowLeftLong, FaCircleXmark } from "react-icons/fa6";
 import CountDown from "../components/CountDown";
 import ElectionCountdown from "../components/ElectionCountdown";
 import Footer from "../components/Footer";
+import axios from "axios";
+import Loader from "../components/Loader";
+import { useNavigate } from "react-router-dom";
 
 export default function SmartvoteElection() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeCard, setActiveCard] = useState(null);
   const [role, setRole] = useState("president"); // Added role state
+  const [candidates, setCandidates] = useState(null);
+  const [tabActive, setTabActive] = useState("tab1");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [responseMessage, setResponseMessage] = useState({
+    message: "",
+    type: "",
+  }); // {message, type}
+
+  const dept = tabActive == "tab1" ? "SSG" : "BSIT";
+  const studentData = JSON.parse(localStorage.getItem("UserData"));
+
+  const [votersData, setVotersData] = useState({
+    student_id: studentData?.student_id,
+    voters_id: studentData?.voters_id,
+    fullname: studentData?.firstname + " " + studentData.lastname,
+    email: studentData?.email,
+    department: studentData?.department,
+    election_type: "",
+    president: "",
+    vice_president: "",
+    secretary: "",
+  });
+
+  const [emptyFields, setEmptyFields] = useState({
+    president: false,
+    vice_president: false,
+    secretary: false,
+  });
+
+  const handleTabClick = (tab) => {
+    // Switch the tab
+    setTabActive(tab);
+    setVotersData({
+      ...votersData,
+      president: "",
+      vice_president: "",
+      secretary: "",
+    });
+  };
+
+  const getCandidates = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3004/smart-vote/approved-candidates/${dept}`
+      );
+      if (response.data.success === true) {
+        setCandidates(response.data.data);
+      }
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getCandidates();
+  }, []);
+
+  const filteredPresident = candidates?.filter(
+    (candidate) => candidate.position === "President"
+  );
+  const filteredVicePres = candidates?.filter(
+    (candidate) => candidate.position === "Vice President"
+  );
+  const filteredSecretary = candidates?.filter(
+    (candidate) => candidate.position === "Secretary"
+  );
+
+  // console.log(filteredSsgCandidates);
+
+  // console.log(candidates);
 
   // Data for each role, you can customize as needed
   const roleData = {
-    president: [
-      {
-        id: 1,
-        title: "Party A",
-        image:
-          "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
-        description:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium, atque perspiciatis cupiditate fuga soluta tenetur in laudantium tempore incidunt voluptatem. Natus facilis cupiditate omnis itaque nesciunt possimus aliquam nulla aliquid?",
-      },
-      {
-        id: 2,
-        title: "Party B",
-        image:
-          "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
-        description:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium, atque perspiciatis cupiditate fuga soluta tenetur in laudantium tempore incidunt voluptatem. Natus facilis cupiditate omnis itaque nesciunt possimus aliquam nulla aliquid?.",
-      },
-    ],
-    "vice-president": [
-      {
-        id: 3,
-        title: "Party C",
-        image:
-          "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
-        description:
-          "Vice President candidate info. Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-      },
-      {
-        id: 4,
-        title: "Party C",
-        image:
-          "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
-        description:
-          "Vice President candidate info. Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-      },
-    ],
-    secretary: [
-      {
-        id: 6,
-        title: "Party D",
-        image:
-          "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
-        description:
-          "Secretary candidate info. Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-      },
-      {
-        id: 5,
-        title: "Party D",
-        image:
-          "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
-        description:
-          "Secretary candidate info. Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-      },
-    ],
+    president: filteredPresident,
+    "vice-president": filteredVicePres,
+    secretary: filteredSecretary,
+    // president: [
+    //   {
+    //     id: 1,
+    //     title: "Party A",
+    //     image:
+    //       "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
+    //     description:
+    //       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium, atque perspiciatis cupiditate fuga soluta tenetur in laudantium tempore incidunt voluptatem. Natus facilis cupiditate omnis itaque nesciunt possimus aliquam nulla aliquid?",
+    //   },
+    //   {
+    //     id: 2,
+    //     title: "Party B",
+    //     image:
+    //       "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
+    //     description:
+    //       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium, atque perspiciatis cupiditate fuga soluta tenetur in laudantium tempore incidunt voluptatem. Natus facilis cupiditate omnis itaque nesciunt possimus aliquam nulla aliquid?.",
+    //   },
+    // ],
+    // "vice-president": [
+    //   {
+    //     id: 3,
+    //     title: "Party C",
+    //     image:
+    //       "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
+    //     description:
+    //       "Vice President candidate info. Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+    //   },
+    //   {
+    //     id: 4,
+    //     title: "Party C",
+    //     image:
+    //       "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
+    //     description:
+    //       "Vice President candidate info. Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+    //   },
+    // ],
   };
 
   // Map role to display text
@@ -123,12 +187,6 @@ export default function SmartvoteElection() {
     seconds: 0,
   });
 
-  const [tabActive, setTabActive] = useState("tab1");
-  const handleTabClick = (tab) => {
-    // Switch the tab
-    setTabActive(tab);
-  };
-
   const data = [
     {
       adminId: "test1",
@@ -153,8 +211,6 @@ export default function SmartvoteElection() {
 
   const closeDate = getCloseElectionDate;
 
-  const dept = tabActive == "tab1" ? "SSG" : "BSIT";
-
   useEffect(() => {
     // if (!candidacyOpened || !closeDate) return;
 
@@ -172,6 +228,82 @@ export default function SmartvoteElection() {
     return () => clearInterval(interval);
   }, [closeDate]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setVotersData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleClear = () => {
+    setVotersData({
+      ...votersData,
+      president: "",
+      vice_president: "",
+      secretary: "",
+    });
+  };
+
+  const handleSubmitVote = async (e) => {
+    e.preventDefault();
+
+    // console.log({ ...votersData, election_type: dept });
+    // console.log(dept);
+
+    const requiredFields = ["president", "vice_president", "secretary"];
+
+    let newEmptyFields = { ...emptyFields };
+    // Check if any required field is empty and mark it in the state
+    requiredFields.forEach((field) => {
+      newEmptyFields[field] = !votersData[field];
+    });
+
+    setEmptyFields(newEmptyFields);
+
+    // If any field is empty, prevent submission
+    if (requiredFields.some((field) => !votersData[field])) {
+      console.log("Please fill in all required fields.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        "http://localhost:3004/smart-vote/insert-votes",
+        { ...votersData, election_type: dept }
+      );
+
+      if (response.data.success === true) {
+        setTimeout(() => {
+          setIsLoading(false);
+          setResponseMessage({
+            message: response.data.message || "Registration successful!",
+            type: "success", // or any other type for styling
+          });
+          handleClear();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 3000);
+      } else {
+        setTimeout(() => {
+          setIsLoading(false);
+          setResponseMessage({
+            message: response.data.message || "Registration failed.",
+            type: "error",
+          });
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 3000);
+      }
+      // Set a timeout to remove the responseMessage after 5 seconds
+      setTimeout(() => {
+        setResponseMessage({ message: "", type: "" }); // Clear message after 5 seconds
+      }, 5000); // 5000 milliseconds = 5 seconds
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-base-200 w-full overflow-auto">
       <Navbar />
@@ -184,6 +316,37 @@ export default function SmartvoteElection() {
           </div>
         )}
       </div>
+
+      {/* Loaders */}
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black opacity-75">
+          {/* Prevent interaction with content behind */}
+          <div className="pointer-events-none">
+            <Loader />
+          </div>
+        </div>
+      )}
+
+      {/* Conditionally render the response message */}
+      {responseMessage.message && (
+        <div className="flex justify-center mt-4 px-4">
+          <div
+            className={`alert w-72 md:w-86 ${
+              responseMessage.type === "success"
+                ? "alert-success"
+                : "alert-error"
+            }`}
+          >
+            {responseMessage.type === "success" ? (
+              <FaCheckCircle />
+            ) : (
+              <FaCircleXmark />
+            )}
+
+            <span>{responseMessage.message}</span>
+          </div>
+        </div>
+      )}
       <div className="px-6 md:px-20 py-8 flex flex-col justify-center">
         <div className="">
           <button
@@ -232,41 +395,60 @@ export default function SmartvoteElection() {
                         <input
                           type="text"
                           placeholder="ID"
+                          value={studentData?.student_id}
                           className="input input-bordered w-full"
-                          required
+                          readOnly
                         />
                       </div>
                       <div>
                         <label htmlFor="" className="text-xs">
-                          Date
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="Date"
-                          className="input input-bordered w-full"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="" className="text-xs">
-                          Position
+                          Voters ID
                         </label>
                         <input
                           type="text"
                           placeholder="ID"
+                          value={studentData?.voters_id}
                           className="input input-bordered w-full"
-                          required
+                          readOnly
                         />
                       </div>
+                      <div>
+                        <label htmlFor="" className="text-xs">
+                          Fullname
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="fullname"
+                          value={
+                            studentData?.firstname + " " + studentData.lastname
+                          }
+                          className="input input-bordered w-full"
+                          readOnly
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="" className="text-xs">
+                          Email Address
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="email"
+                          value={studentData?.email}
+                          className="input input-bordered w-full"
+                          readOnly
+                        />
+                      </div>
+
                       <div>
                         <label htmlFor="" className="text-xs">
                           Department/Course
                         </label>
                         <input
                           type="text"
-                          placeholder="ID"
+                          value={studentData?.department}
+                          placeholder="Department"
                           className="input input-bordered w-full"
-                          required
+                          readOnly
                         />
                       </div>
                     </div>
@@ -274,51 +456,59 @@ export default function SmartvoteElection() {
                     <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2">
                       <div>
                         <div className="mt-4 text-sm mb-1">President</div>
-                        <div className="border p-4 rounded-md  ">
-                          <div className="text-xs md:text-sm flex flex-row gap-6">
-                            <div className="flex gap-4">
-                              <label htmlFor="">John Doe</label>
-                              <input
-                                type="radio"
-                                name="radio-1"
-                                className="radio radio-info"
-                                defaultChecked
-                              />
-                            </div>
-                            <div className="flex gap-4">
-                              <label htmlFor="">Will Sy</label>
-                              <input
-                                type="radio"
-                                name="radio-1"
-                                className="radio radio-info"
-                                defaultChecked
-                              />
-                            </div>
+                        <div
+                          className={`border p-4 rounded-md ${
+                            emptyFields.president ? "border-red-400" : ""
+                          }`}
+                        >
+                          <div className="text-xs md:text-sm grid grid-cols-2 gap-4">
+                            {filteredPresident.map((president, index) => (
+                              <div key={index} className="flex gap-4">
+                                <label htmlFor="">
+                                  {president.firstname} {president.lastname}
+                                </label>
+                                <input
+                                  type="radio"
+                                  name="president"
+                                  value={`${president.firstname} ${president.lastname}`} // Full name as the value
+                                  className="radio radio-info"
+                                  onChange={handleChange}
+                                  checked={
+                                    votersData.president ===
+                                    `${president.firstname} ${president.lastname}`
+                                  }
+                                />
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
                       <div>
                         <div className="mt-4 text-sm mb-1">Vice President</div>
-                        <div className="border p-4 rounded-md  ">
-                          <div className="text-xs md:text-sm flex flex-row gap-6">
-                            <div className="flex gap-4">
-                              <label htmlFor="">John Doe</label>
-                              <input
-                                type="radio"
-                                name="radio-2"
-                                className="radio radio-info"
-                                defaultChecked
-                              />
-                            </div>
-                            <div className="flex gap-4">
-                              <label htmlFor="">Will Sy</label>
-                              <input
-                                type="radio"
-                                name="radio-2"
-                                className="radio radio-info"
-                                defaultChecked
-                              />
-                            </div>
+                        <div
+                          className={`border p-4 rounded-md ${
+                            emptyFields.vice_president ? "border-red-400" : ""
+                          }`}
+                        >
+                          <div className="text-xs md:text-sm grid grid-cols-2 gap-4">
+                            {filteredVicePres.map((vp, index) => (
+                              <div key={index} className="flex gap-4">
+                                <label htmlFor="">
+                                  {vp.firstname} {vp.lastname}
+                                </label>
+                                <input
+                                  type="radio"
+                                  name="vice_president"
+                                  value={`${vp.firstname} ${vp.lastname}`} // Full name as the value
+                                  className="radio radio-info"
+                                  onChange={handleChange}
+                                  checked={
+                                    votersData.vice_president ===
+                                    `${vp.firstname} ${vp.lastname}`
+                                  }
+                                />
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -327,61 +517,45 @@ export default function SmartvoteElection() {
                     <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2">
                       <div>
                         <div className="mt-4 text-sm mb-1">Secretary</div>
-                        <div className="border p-4 rounded-md  ">
-                          <div className="text-xs md:text-sm flex flex-row gap-6">
-                            <div className="flex gap-4">
-                              <label htmlFor="">Johny Sins</label>
-                              <input
-                                type="radio"
-                                name="radio-1"
-                                className="radio radio-info"
-                                defaultChecked
-                              />
-                            </div>
-                            <div className="flex gap-4">
-                              <label htmlFor="">Dolor Tea</label>
-                              <input
-                                type="radio"
-                                name="radio-1"
-                                className="radio radio-info"
-                                defaultChecked
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="mt-4 text-sm mb-1">Treasurer</div>
-                        <div className="border p-4 rounded-md  ">
-                          <div className="text-xs md:text-sm flex flex-row gap-6">
-                            <div className="flex gap-4">
-                              <label htmlFor="">Samantha Rain sdfsdfsdf</label>
-                              <input
-                                type="radio"
-                                name="radio-2"
-                                className="radio radio-info"
-                                defaultChecked
-                              />
-                            </div>
-                            <div className="flex gap-4">
-                              <label htmlFor="">
-                                Lorem Ipsum dolor TEstsff
-                              </label>
-                              <input
-                                type="radio"
-                                name="radio-2"
-                                className="radio radio-info"
-                                defaultChecked
-                              />
-                            </div>
+                        <div
+                          className={`border p-4 rounded-md ${
+                            emptyFields.secretary ? "border-red-400" : ""
+                          }`}
+                        >
+                          <div className="text-xs md:text-sm grid grid-cols-2 gap-4">
+                            {filteredSecretary.map((secretary, index) => (
+                              <div key={index} className="flex gap-4">
+                                <label htmlFor="">
+                                  {secretary.firstname} {secretary.lastname}
+                                </label>
+                                <input
+                                  type="radio"
+                                  name="secretary"
+                                  value={`${secretary.firstname} ${secretary.lastname}`} // Full name as the value
+                                  className="radio radio-info"
+                                  onChange={handleChange}
+                                  checked={
+                                    votersData.secretary ===
+                                    `${secretary.firstname} ${secretary.lastname}`
+                                  }
+                                />
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="flex gap-2 justify-center p-6">
-                    <button className="btn btn-error">Submit Vote</button>
-                    <button className="btn ">Clear Form</button>
+                    <button
+                      className="btn btn-error"
+                      onClick={handleSubmitVote}
+                    >
+                      Submit Vote
+                    </button>
+                    <div className="btn" onClick={handleClear}>
+                      Clear Form
+                    </div>
                   </div>
                 </form>
               </div>
@@ -392,18 +566,20 @@ export default function SmartvoteElection() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {cards.map((card) => (
+                  {cards?.map((card) => (
                     <div
                       key={card.id}
                       className="card bg-base-100 w-72 shadow-sm flex-shrink-0 snap-center transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl"
                     >
                       <figure>
-                        <img src={card.image} alt={card.title} />
+                        <img src={card.image} alt={card.party} />
                       </figure>
                       <div className="card-body">
-                        <h2 className="card-title">{card.title}</h2>
-                        <p>John Doe </p>
-                        <p>Information Technology</p>
+                        <h2 className="card-title">{card.party}</h2>
+                        <p>
+                          {card.firstname} {card.lastname}{" "}
+                        </p>
+                        <p>{card.department}</p>
                         <div className="card-actions justify-end">
                           <button
                             className="btn btn-outline w-full"

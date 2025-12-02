@@ -8,7 +8,7 @@ import Loader from "./Loader";
 import { useNavigate } from "react-router-dom";
 import { FaCheckCircle } from "react-icons/fa";
 import { FaCircleXmark } from "react-icons/fa6";
-
+import { sendMail } from "../utils/mailer";
 export default function CandidacyForm() {
   const navigate = useNavigate();
   const [candidacyOpened, setCandidacyOpened] = useState(false);
@@ -16,7 +16,6 @@ export default function CandidacyForm() {
   const [tabActive, setTabActive] = useState("tab1");
 
   const loggedUser = JSON.parse(localStorage.getItem("UserData"));
-
   // const [closeDate, setCloseDate] = useState("");
   const [candidateData, setCandidateData] = useState({
     student_id: loggedUser?.student_id || "",
@@ -29,7 +28,7 @@ export default function CandidacyForm() {
     party: "",
     about_yourself: "",
     purpose: "",
-    election_type: tabActive == "tab1" ? "SSG" : "BSIT",
+    election_type: tabActive == "tab1" ? "SSG" : loggedUser?.department,
   });
 
   const [countdown, setCountdown] = useState({
@@ -38,6 +37,58 @@ export default function CandidacyForm() {
     minutes: 0,
     seconds: 0,
   });
+  const dept = tabActive == "tab1" ? "SSG" : loggedUser?.department;
+  // useEffect(() => {
+  //   console.log(tabActive);
+  // }, [tabActive]);
+  //* Get Candidacy Schedule
+  const [candidacySchedule, setCandidacySchedule] = useState();
+
+  const getCandidacySchedule = async (e) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3004/smart-vote/get-candidacy-schedule/${dept}`
+      );
+
+      if (response.data.success === true) {
+        setCandidacySchedule(response.data.data[0]);
+        localStorage.setItem(
+          "candidacyData",
+          JSON.stringify(response.data.data[0])
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getCandidacySchedule();
+  }, [dept]);
+
+  // console.log(candidacySchedule);
+
+  //* Get All Admins
+  const [admins, setAdmins] = useState([]);
+  const geAllAdmin = async (e) => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3004/smart-vote/get-admins"
+      );
+
+      if (response.data.success === true) {
+        setAdmins(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    geAllAdmin();
+  }, []);
+
+  const filteredData = admins.filter((item) => item.departments === dept);
 
   const handleTabClick = (tab) => {
     const { position, party, about_yourself, purpose } = candidateData;
@@ -66,7 +117,15 @@ export default function CandidacyForm() {
 
     // Switch the tab
     setTabActive(tab);
+    getCandidacySchedule();
+    // console.log(tabActive);
   };
+
+  // console.log(tabActive);
+
+  // useEffect(() => {
+  //   console.log(tabActive);
+  // }, [tabActive]); // Runs every time tabActive changes
 
   const handleChanges = (e) => {
     const { name, value } = e.target;
@@ -76,30 +135,25 @@ export default function CandidacyForm() {
     }));
   };
 
-  const dept = tabActive == "tab1" ? "SSG" : "BSIT";
-  const data = [
-    {
-      adminId: "test1",
-      adminPassword: "testpass",
-      closeFileDate: "2025-09-18T16:59",
-      department: "SSG",
-      filingStatus: "open",
-    },
-    {
-      adminId: "test1",
-      adminPassword: "testpass",
-      closeFileDate: "2025-09-18T16:35",
-      department: "BSIT",
-      filingStatus: "closed",
-    },
-  ];
+  // const data = [
+  //   {
+  //     adminId: "test1",
+  //     adminPassword: "testpass",
+  //     closeFileDate: "2025-09-18T16:59",
+  //     department: "SSG",
+  //     filingStatus: "open",
+  //   },
+  //   {
+  //     adminId: "test1",
+  //     adminPassword: "testpass",
+  //     closeFileDate: "2025-09-18T16:35",
+  //     department: "BSIT",
+  //     filingStatus: "closed",
+  //   },
+  // ];
 
-  const getCloseFileDate =
-    tabActive == "tab1" ? data[0]?.closeFileDate : data[1]?.closeFileDate;
-  const getFilingStatus =
-    tabActive == "tab1" ? data[0]?.filingStatus : data[1]?.filingStatus;
-
-  const closeDate = getCloseFileDate;
+  const getFilingStatus = candidacySchedule?.status;
+  const closeDate = candidacySchedule?.close_date;
 
   // useEffect(() => {
   //   if (getFilingStatus === "open") {
@@ -142,6 +196,21 @@ export default function CandidacyForm() {
     type: "",
   }); // {message, type}
 
+  const emailData = {
+    to: "joshuacatapan2003@gmail.com",
+    subject: "Smart Vote Filing Of Candidacy",
+    text: `${
+      candidateData.firstname + " " + candidateData.lastname
+    } has filed candidacy for the position of ${
+      candidateData.position
+    }. Need your Review and Approval`,
+    html: `${
+      candidateData.firstname + " " + candidateData.lastname
+    } has filed candidacy for the position of ${
+      candidateData.position
+    }. Need your Review and Approval`,
+  };
+
   const handleSubmitCandidacy = async (e) => {
     e.preventDefault();
 
@@ -175,9 +244,10 @@ export default function CandidacyForm() {
             type: "success", // or any other type for styling
           });
           window.scrollTo({ top: 0, behavior: "smooth" });
+          sendMail(emailData);
         }, 3000);
         setTimeout(() => {
-          navigate("/student/homepage");
+          navigate("student/homepage");
         }, 5000);
       } else {
         setTimeout(() => {
@@ -202,7 +272,7 @@ export default function CandidacyForm() {
     <div className="flex flex-col min-h-screen bg-base-200 overflow-auto">
       <Navbar />
       <div className="mt-20 flex justify-center">
-        {getFilingStatus === "open" ? (
+        {getFilingStatus === "OPEN" ? (
           <CountDown countdown={countdown} dept={dept} />
         ) : (
           <div className="text-xl mt-4 font-bold tracking-wider">
@@ -265,7 +335,7 @@ export default function CandidacyForm() {
           </button>
         </div>
 
-        {getFilingStatus != "open" ? (
+        {getFilingStatus != "OPEN" ? (
           <div className="h-96 border border-gray-500 flex justify-center items-center ">
             <h1 className="text-base md:text-xl font-bold tracking-wider">
               Filing of Candidacy is not available.

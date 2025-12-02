@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import { QRCodeSVG } from "qrcode.react";
 import { FaEye } from "react-icons/fa";
 import Footer from "./Footer";
+import axios from "axios";
 
 const initialUsers = [
   {
@@ -26,16 +27,49 @@ const initialUsers = [
 ];
 
 export default function ElectionReceipt() {
+  const loggedUser = JSON.parse(localStorage.getItem("UserData"));
+
+  const [voteHistory, setVoteHistory] = useState([]);
+  const [selectedHistory, setSelectedHistory] = useState(null);
+
+  const getVoteHistory = async (e) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3004/smart-vote/vote-history",
+        {
+          student_id: loggedUser?.student_id,
+          voters_id: loggedUser?.voters_id,
+        }
+      );
+
+      if (response.data.success === true) {
+        setVoteHistory(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getVoteHistory();
+  }, []);
+
+  console.log(voteHistory);
+
   const qrValue = `
     -- SmartVote System -- 
 
-    Voters ID:"ASDFasdfasdf"
-    Name:"adsfjaskldfalksdfj"
-    Course: "asdlfjalsdfjlkasdf"
-    Election Type: "asdfhaskjdfhaskdfh"
-    Election Date: "asdfhaskjdfhaskdfh"
+    Voters ID: ${selectedHistory?.voters_id}
+    Student ID: ${selectedHistory?.student_id}
+    Full Name: ${selectedHistory?.fullname}
+    Department: ${selectedHistory?.department}
+    Election Type: ${selectedHistory?.election_type}
+    Election Date: ${selectedHistory?.voted_date}
+    Voted Date: ${selectedHistory?.voted_date}
   
   `;
+
+  console.log(selectedHistory);
 
   return (
     <div className="flex flex-col min-h-screen bg-base-200 overflow-auto">
@@ -49,12 +83,12 @@ export default function ElectionReceipt() {
                 <th className="px-4 py-2">Reference No</th>
                 <th className="px-4 py-2">Voters ID</th>
                 <th className="px-4 py-2">Election</th>
-                <th className="px-4 py-2">Election Date</th>
+                <th className="px-4 py-2">Department</th>
                 <th className="px-4 py-2">Action</th>
               </tr>
             </thead>
             <tbody>
-              {initialUsers.map((user, index) => (
+              {voteHistory.map((data, index) => (
                 <tr
                   key={index}
                   className={`hover:bg-base-200 cursor-pointer transition ${
@@ -62,35 +96,36 @@ export default function ElectionReceipt() {
                   }`}
                 >
                   <td className="flex items-center gap-2 px-4 py-2">
-                    <img
+                    {/* <img
                       className="size-10 rounded-box"
-                      src={user.img}
-                      alt={user.reference_no}
-                    />
-                    <span>{user.reference_no}</span>
+                      src={data.img}
+                      alt={data.reference_no}
+                    /> */}
+                    <span>{data.student_id}</span>
                   </td>
                   <td className="px-4 py-2">
                     <span className="text-xs uppercase font-semibold">
-                      {user.position}
+                      {data.voters_id}
                     </span>
                   </td>
                   <td className="px-4 py-2">
                     <span className="text-xs uppercase font-semibold">
-                      {user.election}
+                      {data.election_type} ELECTION
                     </span>
                   </td>
                   <td className="px-4 py-2">
                     <span className="text-xs uppercase font-semibold">
-                      {user.election}
+                      {data.department}
                     </span>
                   </td>
 
                   <td className="px-4 py-2 flex gap-2">
                     <button
                       className="btn btn-sm btn-outline w-20"
-                      onClick={() =>
-                        document.getElementById("receipt-modal").showModal()
-                      }
+                      onClick={() => {
+                        document.getElementById("receipt-modal").showModal(),
+                          setSelectedHistory(data);
+                      }}
                     >
                       <span>
                         <FaEye />
@@ -121,24 +156,24 @@ export default function ElectionReceipt() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 sm:gap-y-4">
                   <div className="flex justify-between sm:justify-start sm:gap-4">
                     <span className="font-semibold">Voter Name:</span>
-                    <span>Edward Catapan</span>
+                    <span>{selectedHistory?.fullname}</span>
                   </div>
                   <div className="flex justify-between sm:justify-start sm:gap-4">
                     <span className="font-semibold">Voter ID:</span>
-                    <span>2021001</span>
+                    <span>{selectedHistory?.voters_id}</span>
                   </div>
                   <div className="flex justify-between sm:justify-start sm:gap-4">
                     <span className="font-semibold">Election:</span>
-                    <span>SSG Election 2024</span>
+                    <span>{selectedHistory?.election_type} Election </span>
                   </div>
                   <div className="flex justify-between sm:justify-start sm:gap-4">
-                    <span className="font-semibold">Date:</span>
-                    <span>March 15, 2025</span>
+                    <span className="font-semibold">Voted Date:</span>
+                    <span>{selectedHistory?.voted_date}</span>
                   </div>
-                  <div className="flex justify-between sm:justify-start sm:gap-4">
+                  {/* <div className="flex justify-between sm:justify-start sm:gap-4">
                     <span className="font-semibold">Time:</span>
                     <span>10:30 AM</span>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="border rounded mt-8">
@@ -147,9 +182,12 @@ export default function ElectionReceipt() {
                   </div>
                   <div className="p-4 space-y-3">
                     {[
-                      { title: "President", name: "Edward Catapan" },
-                      { title: "Vice-President", name: "Charlie Kirk" },
-                      { title: "Secretary", name: "Sam Smith" },
+                      { title: "President", name: selectedHistory?.president },
+                      {
+                        title: "Vice-President",
+                        name: selectedHistory?.vice_president,
+                      },
+                      { title: "Secretary", name: selectedHistory?.secretary },
                       { title: "Treasurer", name: "John Doe" },
                       { title: "Auditor", name: "Nikola Tesla" },
                       { title: "Sgt. Arms", name: "Elon Musk" },
