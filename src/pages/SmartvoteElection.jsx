@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import {
   FaCheckCircle,
@@ -12,6 +12,8 @@ import Footer from "../components/Footer";
 import axios from "axios";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
+import Webcam from "react-webcam";
+import * as faceapi from "face-api.js";
 
 export default function SmartvoteElection() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +22,16 @@ export default function SmartvoteElection() {
   const [candidates, setCandidates] = useState(null);
   const [tabActive, setTabActive] = useState("tab1");
   const [isLoading, setIsLoading] = useState(false);
+
+  //?facial
+
+  const webcamRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [status, setStatus] = useState("Loading models...");
+  const [isModelsReady, setIsModelsReady] = useState(false);
+  const [openCam, setOpenCam] = useState(false);
+  const [isFaceMatched, setIsFaceMatched] = useState(false);
+  const [hideButton, setHideButton] = useState(false);
 
   const [responseMessage, setResponseMessage] = useState({
     message: "",
@@ -304,6 +316,120 @@ export default function SmartvoteElection() {
     }
   };
 
+  const facedb = JSON.parse(localStorage.getItem("face-db")) || [];
+  // const userdata = JSON.parse(localStorage.getItem("UserData")) || [];
+  const userdata = facedb[0];
+  const handleVerifyFace = () => {
+    setOpenCam(true);
+  };
+
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        await Promise.all([
+          faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
+          faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+          faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
+        ]);
+        setStatus("Models loaded ✅");
+        setIsModelsReady(true);
+      } catch (err) {
+        setStatus("Failed to load models ❌");
+        console.error(err);
+      }
+    };
+    loadModels();
+  }, []);
+  // console.log(userdata);
+
+  // Run face verification only for the logged-in user's descriptor
+  useEffect(() => {
+    if (!isModelsReady || !userdata || !userdata.descriptor) return;
+
+    const targetDescriptor = new Float32Array(userdata.descriptor);
+    const labeledDescriptor = new faceapi.LabeledFaceDescriptors(
+      userdata.student_id,
+      [targetDescriptor]
+    );
+
+    const matcher = new faceapi.FaceMatcher([labeledDescriptor], 0.6);
+
+    const interval = setInterval(async () => {
+      if (webcamRef.current && webcamRef.current.video.readyState === 4) {
+        const video = webcamRef.current.video;
+
+        const detections = await faceapi
+          .detectAllFaces(video)
+          .withFaceLandmarks()
+          .withFaceDescriptors();
+
+        const dims = {
+          width: video.videoWidth,
+          height: video.videoHeight,
+        };
+
+        faceapi.matchDimensions(canvasRef.current, dims);
+        const resized = faceapi.resizeResults(detections, dims);
+        const ctx = canvasRef.current.getContext("2d");
+        ctx.clearRect(0, 0, dims.width, dims.height);
+
+        resized.forEach((det) => {
+          const match = matcher.findBestMatch(det.descriptor);
+          const { box } = det.detection;
+
+          const drawBox = new faceapi.draw.DrawBox(box, {
+            label: match.toString(),
+          });
+          drawBox.draw(canvasRef.current);
+
+          if (match.label === userdata.student_id) {
+            setIsFaceMatched(true);
+          }
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isModelsReady, userdata]);
+
+  // Handle successful face match
+  useEffect(() => {
+    if (isFaceMatched && userdata) {
+      setTimeout(() => {
+        setOpenCam(false);
+        setHideButton(true);
+      }, 5000);
+    }
+    console.log("Matche");
+    console.log(hideButton);
+  }, [isFaceMatched]);
+
+  if (openCam) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4 space-y-4">
+        <h1 className="text-2xl text-gray-600 font-bold">
+          Verifying Facial Recognition
+        </h1>
+        <div className="relative w-[640px] h-[480px]">
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            width={640}
+            height={480}
+            videoConstraints={{ facingMode: "user" }}
+            className="rounded shadow"
+          />
+          <canvas
+            ref={canvasRef}
+            width={640}
+            height={480}
+            className="absolute top-0 left-0 z-10"
+          />
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-base-200 w-full overflow-auto">
       <Navbar />
@@ -546,17 +672,36 @@ export default function SmartvoteElection() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-2 justify-center p-6">
-                    <button
-                      className="btn btn-error"
-                      onClick={handleSubmitVote}
-                    >
-                      Submit Vote
-                    </button>
-                    <div className="btn" onClick={handleClear}>
-                      Clear Form
+                  {!hideButton && (
+                    <div className="flex justify-center">
+                      <div
+                        className="btn btn-warning text-white mx-auto w-full"
+                        onClick={handleVerifyFace}
+                      >
+                        Verify Face
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {/* show button */}
+                  {hideButton && (
+                    <>
+                      <div className="text-center text-green-500 font-bold">
+                        ✅ Face Verified
+                      </div>
+                      <div className="flex gap-2 justify-between p-5">
+                        <button
+                          className="btn btn-error"
+                          onClick={handleSubmitVote}
+                        >
+                          Submit Vote
+                        </button>
+                        <div className="btn" onClick={handleClear}>
+                          Clear Form
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </form>
               </div>
             ) : (

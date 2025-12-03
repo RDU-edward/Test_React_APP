@@ -168,6 +168,7 @@ export default function Register() {
     );
   };
 
+  const face_db = JSON.parse(localStorage.getItem("face-db")) || [];
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -194,6 +195,20 @@ export default function Register() {
       return;
     }
 
+    if (face_db.length === 0) {
+      setResponseMessage({
+        message: "Facial Recognition Required! Register Face.",
+        type: "error", // or any other type for styling
+      });
+      setTimeout(() => {
+        setResponseMessage({
+          message: "",
+          type: "", // or any other type for styling
+        });
+      }, 3000);
+
+      return;
+    }
     // Add registration logic here
 
     try {
@@ -216,6 +231,7 @@ export default function Register() {
           password: "",
         });
       } else {
+        localStorage.removeItem("face-db");
         setResponseMessage({
           message: response.data.message || "Registration failed.",
           type: "error",
