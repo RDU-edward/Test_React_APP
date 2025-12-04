@@ -316,9 +316,7 @@ export default function SmartvoteElection() {
     }
   };
 
-  const facedb = JSON.parse(localStorage.getItem("face-db")) || [];
-  // const userdata = JSON.parse(localStorage.getItem("UserData")) || [];
-  const userdata = facedb[0];
+  const facial_descriptor = studentData?.face_descriptor.split(",");
   const handleVerifyFace = () => {
     setOpenCam(true);
   };
@@ -344,11 +342,11 @@ export default function SmartvoteElection() {
 
   // Run face verification only for the logged-in user's descriptor
   useEffect(() => {
-    if (!isModelsReady || !userdata || !userdata.descriptor) return;
+    if (!isModelsReady || !studentData || !facial_descriptor) return;
 
-    const targetDescriptor = new Float32Array(userdata.descriptor);
+    const targetDescriptor = new Float32Array(facial_descriptor);
     const labeledDescriptor = new faceapi.LabeledFaceDescriptors(
-      userdata.student_id,
+      studentData.student_id,
       [targetDescriptor]
     );
 
@@ -382,7 +380,7 @@ export default function SmartvoteElection() {
           });
           drawBox.draw(canvasRef.current);
 
-          if (match.label === userdata.student_id) {
+          if (match.label === studentData.student_id) {
             setIsFaceMatched(true);
           }
         });
@@ -390,11 +388,11 @@ export default function SmartvoteElection() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isModelsReady, userdata]);
+  }, [isModelsReady, studentData]);
 
   // Handle successful face match
   useEffect(() => {
-    if (isFaceMatched && userdata) {
+    if (isFaceMatched && studentData) {
       setTimeout(() => {
         setOpenCam(false);
         setHideButton(true);

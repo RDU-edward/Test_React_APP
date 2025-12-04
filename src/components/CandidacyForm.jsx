@@ -29,6 +29,7 @@ export default function CandidacyForm() {
     about_yourself: "",
     purpose: "",
     election_type: tabActive == "tab1" ? "SSG" : loggedUser?.department,
+    candidate_profile: null,
   });
 
   const [countdown, setCountdown] = useState({
@@ -91,8 +92,10 @@ export default function CandidacyForm() {
   const filteredData = admins.filter((item) => item.departments === dept);
 
   const handleTabClick = (tab) => {
-    const { position, party, about_yourself, purpose } = candidateData;
-    const hasChanges = position || party || about_yourself || purpose;
+    const { position, party, about_yourself, purpose, candidate_profile } =
+      candidateData;
+    const hasChanges =
+      position || party || about_yourself || purpose || candidate_profile;
 
     if (hasChanges) {
       const confirmSwitch = window.confirm(
@@ -113,6 +116,7 @@ export default function CandidacyForm() {
       party: "",
       about_yourself: "",
       purpose: "",
+      candidate_profile: null,
     });
 
     // Switch the tab
@@ -133,6 +137,16 @@ export default function CandidacyForm() {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const onFileChange = (event) => {
+    const file = event.target.files[0]; // Get the first selected fil
+    setCandidateData({
+      ...candidateData,
+      candidate_profile: file, // Set the file in candidateData state
+    });
+    setSelectedFile(file); // Set the file in selectedFile state
   };
 
   // const data = [
@@ -189,6 +203,7 @@ export default function CandidacyForm() {
     party: false,
     about_yourself: false,
     purpose: false,
+    candidate_profile: false,
   });
 
   const [responseMessage, setResponseMessage] = useState({
@@ -211,13 +226,19 @@ export default function CandidacyForm() {
     }. Need your Review and Approval`,
   };
 
-  const handleSubmitCandidacy = async (e) => {
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const handleSubmitFile = async (e) => {
     e.preventDefault();
-
-    const requiredFields = ["position", "about_yourself", "purpose"];
+    const requiredFields = [
+      "position",
+      "party",
+      "about_yourself",
+      "purpose",
+      "candidate_profile",
+    ];
 
     let newEmptyFields = { ...emptyFields };
-    // Check if any required field is empty and mark it in the state
+    // Step 1: Check if any required field is empty and mark it in the state
     requiredFields.forEach((field) => {
       newEmptyFields[field] = !candidateData[field];
     });
@@ -229,13 +250,40 @@ export default function CandidacyForm() {
       console.log("Please fill in all required fields.");
       return;
     }
-    console.log(candidateData);
+
+    const formData = new FormData();
+    formData.append("file", candidateData.candidate_profile);
+
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "http://localhost:3004/smart-vote/insert-candidates",
-        candidateData
+        "http://localhost:3004/smart-vote/image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
+      setUploadedFile(response.data.file); // Optionally, store the uploaded file data
+
+      console.log("File uploaded successfully:", response.data.file);
+
+      // After the file upload is successful, proceed with the candidacy submission
+      handleSubmitCandidacy(response.data.file);
+    } catch (error) {
+      // setMessage("Error uploading file!");
+    }
+  };
+
+  const handleSubmitCandidacy = async (file) => {
+    try {
+      // Step 4: Submit candidate data
+      const response = await axios.post(
+        "http://localhost:3004/smart-vote/insert-candidates",
+        { ...candidateData, candidate_profile: file.path }
+      );
+
       if (response.data.success === true) {
         setTimeout(() => {
           setIsLoading(false);
@@ -244,10 +292,10 @@ export default function CandidacyForm() {
             type: "success", // or any other type for styling
           });
           window.scrollTo({ top: 0, behavior: "smooth" });
-          sendMail(emailData);
+          // sendMail(emailData);
         }, 3000);
         setTimeout(() => {
-          navigate("student/homepage");
+          navigate("/student/homepage");
         }, 5000);
       } else {
         setTimeout(() => {
@@ -264,7 +312,17 @@ export default function CandidacyForm() {
       }
       console.log(response.data);
     } catch (error) {
-      console.error(error);
+      console.error("Error submitting candidacy:", error);
+      setResponseMessage({
+        message: "An error occurred while submitting the candidacy.",
+        type: "error",
+      });
+    } finally {
+      // Reset the loading state after the request completes
+      setIsLoading(false);
+      setTimeout(() => {
+        setResponseMessage({ message: "", type: "" });
+      }, 5000); // Clear response message after 5 seconds
     }
   };
 
@@ -461,7 +519,9 @@ export default function CandidacyForm() {
                   </label>
                   <input
                     type="text"
-                    className="input input-bordered w-full"
+                    className={`input input-bordered w-full ${
+                      emptyFields.party ? "input-error" : ""
+                    }`}
                     name="party"
                     placeholder="Parties/Organization"
                     value={candidateData.party}
@@ -494,15 +554,26 @@ export default function CandidacyForm() {
                   onChange={handleChanges}
                 ></textarea>
               </div>
-              <div>
-                <div className="text-sm">Attachments</div>
-                <div className="h-24 flex justify-center items-center border-2 border-gray-400 border-dashed rounded-md">
-                  Attachments
-                </div>
+              <div className="text-sm">Attachments</div>
+              <div className="relative">
+                <input
+                  type="file"
+                  id="file-input"
+                  className="opacity-0 absolute top-0 left-0 cursor-pointer"
+                  onChange={onFileChange}
+                />
+                <label
+                  htmlFor="file-input"
+                  className={`w-full h-24 border-2 border-dashed ${
+                    emptyFields.candidate_profile ? "border-red-400" : ""
+                  } rounded-md flex items-center justify-center cursor-pointer text-center text-white`}
+                >
+                  {selectedFile ? selectedFile.name : "Choose a file"}
+                </label>
               </div>
             </div>
             <div className="flex gap-2 justify-center p-6">
-              <button className="btn btn-error" onClick={handleSubmitCandidacy}>
+              <button className="btn btn-error" onClick={handleSubmitFile}>
                 Submit Candidacy
               </button>
               <button className="btn ">Clear Form</button>

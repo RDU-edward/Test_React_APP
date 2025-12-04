@@ -18,6 +18,7 @@ export default function Register() {
     department: "",
     email: "",
     password: "",
+    face_descriptor: "",
   });
 
   const handleChange = (e) => {
@@ -169,6 +170,8 @@ export default function Register() {
   };
 
   const face_db = JSON.parse(localStorage.getItem("face-db")) || [];
+  const facial_descriptor = face_db[0].descriptor.join(",");
+
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -214,7 +217,7 @@ export default function Register() {
     try {
       const response = await axios.post(
         "http://localhost:3004/smart-vote/voters",
-        formData
+        { ...formData, face_descriptor: facial_descriptor }
       );
       if (response.data.success === true) {
         setResponseMessage({
